@@ -1,0 +1,11 @@
+set_io outmeter[0] 96
+set_io outmeter[1] 97
+set_io outmeter[2] 98
+set_io outmeter[3] 99
+set_io clk 21
+set_io outcnt[0] 87
+set_io outcnt[1] 88
+set_io outcnt[2] 90
+set_io outcnt[3] 91
+set_io pulse 78
+set_io rst 79
