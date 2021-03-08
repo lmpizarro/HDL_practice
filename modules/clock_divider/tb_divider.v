@@ -11,7 +11,6 @@ clock_divider U_t (
 );
 
 
-
 // Clock generator
 always begin
   #5 clk = ~clk; // Toggle clock every 5 ticks

@@ -1,48 +1,53 @@
 //-- prescaler.v
 //-- clk_in: señal de reloj de entrada
-//-- clk_out: Señal de reloj de salida, con menor frecuencia
 module pwm(
       clk_in, 
       pwm_in,
-      pwm_out
+      pwm_out,
+      rst
     );
 
+    parameter N = 4;
     input clk_in;
-    output pwm_out;
+    output reg pwm_out;
+    input [N-1:0] pwm_in;
+    input rst;
 
-    input [3:0] pwm_in;
-    
     //-- Numero de bits del prescaler (por defecto)
-    parameter N = 8;
-
-    reg pwm_out;    
-
-    //-- Registro para implementar contador de N bits
-    reg [N-1:0] count = 0;
-
-    reg [3:0] counter_pwm;
-
-    reg flag;
     
-    //-- El bit más significativo se saca por la salida
-    // assign clk_out = count[N-5];
+    reg [N-1:0] counter_pwm = 0;
+    reg [N-1:0] duty_counter;
+    reg pwm_clock;
 
-    always @(posedge(clk_in)) begin
-      flag <= count[N-5]; 
+
+    //-- Contador: se incrementa en flanco de subida
+    always @(posedge clk_in) begin
+      if (! rst) begin
+          counter_pwm <= 0;
+          duty_counter <= 0;
+          pwm_clock <= 0;
+     end
+     counter_pwm <= counter_pwm - 1;
+     pwm_clock <= counter_pwm[N-1];
     end
     
-    //-- Contador: se incrementa en flanco de subida
-    always @(posedge(clk_in)) begin
-      count <= count + 1;
-      counter_pwm <= counter_pwm - 1;
-      if (counter_pwm == 0) begin
-          pwm_out <= 0;        
+    always @(posedge pwm_clock) begin
+      duty_counter <= pwm_in;
+      flag <= 1;
+    end
+
+    reg  flag;
+
+    always @(posedge clk_in) begin
+      if (flag == 1) begin
+        duty_counter <= duty_counter - 1;
+      end
+      if (duty_counter == 1) begin
+        flag <= 0;
+      end      else begin
+
+       pwm_out <= | duty_counter;
       end
     end
 
-    always @(posedge(flag)) begin
-      counter_pwm <= pwm_in;
-      pwm_out <= 1;
-    end
-    
 endmodule

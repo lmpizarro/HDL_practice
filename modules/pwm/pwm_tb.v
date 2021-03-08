@@ -1,11 +1,11 @@
-//`include "first_counter.v"
-
 module pwm_tb();
+
 
 // Declare inputs as regs and outputs as wires
 reg clk_in;
-wire clk_out;
 reg [3:0] pwm_in; 
+wire pwm_out;
+reg rst;
 
 // Initialize all variables
 initial begin        
@@ -17,6 +17,9 @@ initial begin
 
   clk_in = 1;       // initial value of clock
   pwm_in = 10;
+  rst = 1;
+  #5 rst = 0;
+  #10 rst = 1;
   #400 $finish;      // Terminate simulation
 end
 
@@ -26,10 +29,11 @@ always begin
 end
 
 // Connect DUT to test bench
-pwm U_pwm (
-  clk_in,
-  pwm_in [3:0],
-  pwm_out
+pwm Upwm (
+  .clk_in(clk_in),
+  .pwm_in(pwm_in),
+  .pwm_out(pwm_out),
+  .rst(rst)
 );
 
 endmodule
