@@ -2,3 +2,4 @@
 *.lxt
 *.blif
 *.bin
+.vscode
