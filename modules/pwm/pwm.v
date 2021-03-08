@@ -8,6 +8,7 @@ module pwm(
     );
 
     parameter N = 4;
+    
     input clk_in;
     output reg pwm_out;
     input [N-1:0] pwm_in;
