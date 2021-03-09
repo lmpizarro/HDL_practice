@@ -3,3 +3,5 @@
 *.blif
 *.bin
 .vscode
+*.vcd
+python/migen/
