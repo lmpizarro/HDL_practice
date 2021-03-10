@@ -16,7 +16,7 @@ initial begin
   $dumpvars(0, pwm_tb);
 
   clk_in = 1;       // initial value of clock
-  pwm_in = 10;
+  pwm_in = 15;
   rst = 1;
   #5 rst = 0;
   #10 rst = 1;
@@ -29,7 +29,7 @@ always begin
 end
 
 // Connect DUT to test bench
-pwm Upwm (
+pwm #(.N(5)) Upwm (
   .clk_in(clk_in),
   .pwm_in(pwm_in),
   .pwm_out(pwm_out),

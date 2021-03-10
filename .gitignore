@@ -5,3 +5,6 @@
 .vscode
 *.vcd
 python/migen/
+python/nmigen/
+python/myhdl/
+pwm.py

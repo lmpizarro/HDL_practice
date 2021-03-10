@@ -1,13 +1,19 @@
-//-- prescaler.v
+//-- pwm.v
 //-- clk_in: señal de reloj de entrada
-module pwm(
-      clk_in, 
-      pwm_in,
-      pwm_out,
-      rst
+module pwm
+    # (parameter N = 4)
+    (
+        clk_in, 
+        pwm_in,
+        pwm_out,
+        rst
     );
 
-    parameter N = 4;
+    parameter MAX_VAL = $pow(2, N) - 1;
+
+    initial begin
+        $display("%f", MAX_VAL);
+    end
     
     input clk_in;
     output reg pwm_out;
@@ -27,27 +33,36 @@ module pwm(
           counter_pwm <= 0;
           duty_counter <= 0;
           pwm_clock <= 0;
-     end
-     counter_pwm <= counter_pwm - 1;
-     pwm_clock <= counter_pwm[N-1];
+      end
+      counter_pwm <= counter_pwm - 1;
+      pwm_clock <= counter_pwm[N-1];
     end
     
     always @(posedge pwm_clock) begin
-      duty_counter <= pwm_in;
-      flag <= 1;
+      
+      if (pwm_in == MAX_VAL) begin
+        
+          duty_counter <= pwm_in - 1;
+
+      end else if (pwm_in == 0) begin
+           duty_counter <= 2;
+      end else
+           duty_counter <= pwm_in; 
+
+      flag_inicio_duty <= 1;
     end
 
-    reg  flag;
+    reg  flag_inicio_duty;
 
     always @(posedge clk_in) begin
-      if (flag == 1) begin
+      if (flag_inicio_duty == 1) begin
         duty_counter <= duty_counter - 1;
       end
+      
       if (duty_counter == 1) begin
-        flag <= 0;
-      end      else begin
-
-       pwm_out <= | duty_counter;
+        flag_inicio_duty <= 0;
+      end else begin
+         pwm_out <= | duty_counter;
       end
     end
 
