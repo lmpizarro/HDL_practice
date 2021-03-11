@@ -22,9 +22,9 @@ end
 initial begin        
   $display ("time\t clk out");	
   $monitor ("%g\t %b     %b      %b", 
-	$time, clk, outcnt);
+	$time, clk, outcnt, out30);
 
-  $dumpfile("test.lxt");
+  $dumpfile("clocks.lxt");
   $dumpvars(0, clocks_tb);
 
   clk = 1;       // initial value of clock

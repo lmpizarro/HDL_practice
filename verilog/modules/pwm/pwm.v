@@ -6,7 +6,9 @@ module pwm
         clk_in, 
         pwm_in,
         pwm_out,
-        rst
+        rst,
+	wr_data,
+	ce
     );
 
     parameter MAX_VAL = $pow(2, N) - 1;
@@ -19,12 +21,22 @@ module pwm
     output reg pwm_out;
     input [N-1:0] pwm_in;
     input rst;
+    input ce;
+    input wr_data;
 
     //-- Numero de bits del prescaler (por defecto)
     
     reg [N-1:0] counter_pwm = 0;
     reg [N-1:0] duty_counter;
     reg pwm_clock;
+    reg [N-1:0] data_pwm;
+
+
+    // loads data_pwm with pwm_in
+    always @(negedge wr_data, ce) begin
+        if (ce)
+	    data_pwm <= pwm_in;
+    end
 
 
     //-- Contador: se incrementa en flanco de subida
@@ -33,6 +45,7 @@ module pwm
           counter_pwm <= 0;
           duty_counter <= 0;
           pwm_clock <= 0;
+	  data_pwm <= 0;
       end
       counter_pwm <= counter_pwm - 1;
       pwm_clock <= counter_pwm[N-1];
@@ -40,14 +53,14 @@ module pwm
     
     always @(posedge pwm_clock) begin
       
-      if (pwm_in == MAX_VAL) begin
+      if (data_pwm == MAX_VAL) begin
         
-          duty_counter <= pwm_in - 1;
+          duty_counter <= data_pwm - 1;
 
-      end else if (pwm_in == 0) begin
+      end else if (data_pwm == 0) begin
            duty_counter <= 2;
       end else
-           duty_counter <= pwm_in; 
+           duty_counter <= data_pwm; 
 
       flag_inicio_duty <= 1;
     end

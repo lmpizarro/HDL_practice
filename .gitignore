@@ -8,3 +8,5 @@ python/migen/
 python/nmigen/
 python/myhdl/
 pwm.py
+*.swp
+

@@ -1,6 +1,6 @@
 PROJ = clocks
-TB = tb_clocks.v
-SRCS = clocks.v
+TB = tb_$(PROJ).v
+SRCS = $(PROJ).v
 
 all: gtkwave
 
@@ -9,7 +9,7 @@ simulate:
 	vvp $(PROJ).vvp -lxt2 
 
 gtkwave: simulate
-	gtkwave test.lxt
+	gtkwave $(PROJ).lxt
 
 clean: 
 	rm -rf $(PROJ).vvp *.vcd *.txt *.lxt 
