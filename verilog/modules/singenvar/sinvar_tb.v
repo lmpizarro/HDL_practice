@@ -1,24 +1,28 @@
 //`include "first_counter.v"
 
-module prescaler_tb();
+module sinvar_tb();
 
 // Declare inputs as regs and outputs as wires
 reg clk;
 reg [2: 0] prescaler;
-wire clk_out;
+wire out;
+reg rst;
 
 
 // Initialize all variables
 initial begin        
   $display ("time\t clk clk_out");	
-  $monitor ("%g\t %b   %b", $time, clk, clk_out);
+  $monitor ("%g\t %b   %b", $time, clk, out);
 
-  $dumpfile("test.lxt");
-  $dumpvars(0, prescaler_tb);
+  $dumpfile("sinvar.lxt");
+  $dumpvars(0, sinvar_tb);
 
   prescaler = 1;
   clk = 1;       // initial value of clock
-  #400 $finish;      // Terminate simulation
+  rst = 1;
+  #4 rst = 0;
+  #4 rst = 1;
+  #900 $finish;      // Terminate simulation
 end
 
 // Clock generator
@@ -27,10 +31,11 @@ always begin
 end
 
 // Connect DUT to test bench
-prescaler U_counter (
+sinvar U_counter (
   clk,
   prescaler,
-  clk_out
+  out,
+  rst
 );
 
 endmodule
