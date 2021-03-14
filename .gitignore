@@ -9,4 +9,4 @@ python/nmigen/
 python/myhdl/
 pwm.py
 *.swp
-
+obj_dir/

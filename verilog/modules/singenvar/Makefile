@@ -1,6 +1,6 @@
 PROJ = sinvar
 TB = $(PROJ)_tb.v
-SRCS = $(PROJ).v
+SRCS = $(PROJ).v prescaler.v decoder16.v
 
 all: gtkwave
 
@@ -12,7 +12,7 @@ gtkwave: simulate
 	gtkwave $(PROJ).lxt
 
 clean: 
-	rm -rf $(PROJ).vvp *.vcd *.txt *.lxt 
+	rm -rf $(PROJ).vvp *.vcd *.txt *.lxt  obj_dir
 
 $(PROJ).bin: $(PROJ).pcf $(PROJ).v 
 	
@@ -24,3 +24,6 @@ $(PROJ).bin: $(PROJ).pcf $(PROJ).v
 	
 	#-- Generar binario final, listo para descargar en fgpa
 	icepack $(PROJ).txt $(PROJ).bin
+
+verilator:
+	verilator -Wall -cc $(PROJ).v
