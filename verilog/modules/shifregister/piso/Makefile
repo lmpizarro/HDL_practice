@@ -1,6 +1,6 @@
-PROJ = sinvar
+PROJ = piso
 TB = $(PROJ)_tb.v
-SRCS = $(PROJ).v prescaler.v decoder16.v piso.v
+SRCS = $(PROJ).v
 
 all: gtkwave
 
