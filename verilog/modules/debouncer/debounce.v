@@ -49,11 +49,8 @@ module debounce
                    out <= 1;
                    debounce_counter <= 0; 
                 end
-
         end
     end
-
-
 
     prescaler d_pre(
        .clk(clk),
