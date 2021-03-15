@@ -1,6 +1,6 @@
 PROJ = debounce
 TB = $(PROJ)_tb.v
-SRCS = $(PROJ).v 
+SRCS = $(PROJ).v  ../singenvar/prescaler.v
 
 all: gtkwave
 

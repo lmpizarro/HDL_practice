@@ -25,6 +25,8 @@ module debounce_tb
        #5 rst = 0;
        #10 rst = 1;
        #10 in = 0;
+       #350 in = 1;
+       #100 in = 0;
        #400 $finish;
     end
     // Clock generator
