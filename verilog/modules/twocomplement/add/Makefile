@@ -1,4 +1,4 @@
-PROJ = gtldeq
+PROJ = twocomplement
 TB = $(PROJ)_tb.v
 SRCS = $(PROJ).v 
 
