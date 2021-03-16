@@ -1,4 +1,4 @@
-module twocomplement 
+module gtlteq 
     # (parameter N = 4)
     (
         op1,

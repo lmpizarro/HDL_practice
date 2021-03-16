@@ -1,4 +1,4 @@
-PROJ = gtldeq
+PROJ = gtlteq
 TB = $(PROJ)_tb.v
 SRCS = $(PROJ).v 
 

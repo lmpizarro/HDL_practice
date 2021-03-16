@@ -1,4 +1,4 @@
-module gtldeq_tb
+module gtlteq_tb
     # (parameter N = 4)
     (
        op1,
@@ -17,8 +17,8 @@ module gtldeq_tb
        $display ("time\t op1 op2  out gt eq lt");	
        $monitor ("%g\t %b   %b %b %b %b", $time, op1, op2, gt, eq, lt);
 
-       $dumpfile("gtldeq.lxt");
-       $dumpvars(0, gtldeq_tb);
+       $dumpfile("gtlteq.lxt");
+       $dumpvars(0, gtlteq_tb);
        #5  op1 = 4'b1111; op2 = 4'b1111; // eq 
        #5  op1 = 4'b0000; op2 = 4'b0000;
        #5  op1 = 4'b1111; op2 = 4'b1111; // eq 
@@ -49,7 +49,7 @@ module gtldeq_tb
     end
 
 
-    twocomplement #(.N(N))  dut (
+    gtlteq #(.N(N))  dut (
         .op1(op1),
         .op2(op2),
         .gt(gt),
