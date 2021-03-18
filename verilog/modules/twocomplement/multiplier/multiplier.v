@@ -34,8 +34,8 @@ par1    01111 --------->
        1101 
     */
     fulladder_4bit fa1({1'b0, {N-1{B[0]}} & A[N-1:1]}, {N{B[1]}} &  A, 1'b0, cout1, par1);
-    fulladder_4bit fa2(       {cout1, par1[N-1:1]},    {N{B[2]}} &  A, 1'b0,  cout2, par2);
-    fulladder_4bit fa3(       {cout2, par2[N-1:1]},    {N{B[3]}} &  A, 1'b0,  c_out, par3);
+    fulladder_4bit fa2(       {cout1, par1[N-1:1]},    {N{B[2]}} &  A, 1'b0, cout2, par2);
+    fulladder_4bit fa3(       {cout2, par2[N-1:1]},    {N{B[3]}} &  A, 1'b0, c_out, par3);
 
     assign out[0] = B[0] & A[0];
     assign out[1] = par1[0];
