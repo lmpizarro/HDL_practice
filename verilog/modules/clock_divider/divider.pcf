@@ -1,0 +1,10 @@
+set_io clock_out 99
+set_io clock_in  21
+set_io divisor[0]   98
+set_io divisor[1]   97
+set_io divisor[2]   96
+set_io divisor[3]   91
+set_io divisor[4]   90
+set_io divisor[5]   88
+set_io divisor[6]   87
+set_io divisor[7]   81

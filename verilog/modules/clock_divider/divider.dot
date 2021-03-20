@@ -1,0 +1,48 @@
+digraph "clock_divider" {
+label="clock_divider";
+rankdir="LR";
+remincross=true;
+n8 [ shape=octagon, label="clock_in", color="black", fontcolor="black" ];
+n9 [ shape=octagon, label="clock_out", color="black", fontcolor="black" ];
+n10 [ shape=diamond, label="counter", color="black", fontcolor="black" ];
+n11 [ shape=octagon, label="divisor", color="black", fontcolor="black" ];
+{ rank="source"; n11; n8;}
+{ rank="sink"; n9;}
+v0 [ label="1'1" ];
+c15 [ shape=record, label="{{<p12> A|<p13> B}|$2\n$add|{<p14> Y}}" ];
+v1 [ label="2'10" ];
+c16 [ shape=record, label="{{<p12> A|<p13> B}|$5\n$div|{<p14> Y}}" ];
+c17 [ shape=record, label="{{<p12> A|<p13> B}|$4\n$ge|{<p14> Y}}" ];
+c18 [ shape=record, label="{{<p12> A|<p13> B}|$6\n$lt|{<p14> Y}}" ];
+c22 [ shape=record, label="{{<p19> CLK|<p20> D}|$11\n$dff|{<p21> Q}}" ];
+c23 [ shape=record, label="{{<p19> CLK|<p20> D}|$12\n$dff|{<p21> Q}}" ];
+v2 [ label="8'00000000" ];
+c25 [ shape=record, label="{{<p12> A|<p13> B|<p24> S}|$9\n$mux|{<p14> Y}}" ];
+v3 [ label="1'1" ];
+c26 [ shape=record, label="{{<p12> A|<p13> B}|$3\n$sub|{<p14> Y}}" ];
+v4 [ label="1'0" ];
+v5 [ label="1'1" ];
+c27 [ shape=record, label="{{<p12> A|<p13> B|<p24> S}|$7\n$mux|{<p14> Y}}" ];
+c27:p14:e -> c22:p20:w [color="black", label=""];
+c23:p21:e -> n10:w [color="black", style="setlinewidth(3)", label=""];
+n10:e -> c15:p12:w [color="black", style="setlinewidth(3)", label=""];
+n10:e -> c17:p12:w [color="black", style="setlinewidth(3)", label=""];
+n10:e -> c18:p12:w [color="black", style="setlinewidth(3)", label=""];
+n11:e -> c16:p12:w [color="black", style="setlinewidth(3)", label=""];
+n11:e -> c26:p12:w [color="black", style="setlinewidth(3)", label=""];
+c25:p14:e -> c23:p20:w [color="black", style="setlinewidth(3)", label=""];
+c15:p14:e -> c25:p12:w [color="black", style="setlinewidth(3)", label=""];
+c16:p14:e -> c18:p13:w [color="black", style="setlinewidth(3)", label=""];
+c17:p14:e -> c25:p24:w [color="black", label=""];
+c18:p14:e -> c27:p24:w [color="black", label=""];
+c26:p14:e -> c17:p13:w [color="black", style="setlinewidth(3)", label=""];
+n8:e -> c22:p19:w [color="black", label=""];
+n8:e -> c23:p19:w [color="black", label=""];
+c22:p21:e -> n9:w [color="black", label=""];
+v0:e -> c15:p13:w [color="black", label=""];
+v1:e -> c16:p13:w [color="black", style="setlinewidth(3)", label=""];
+v2:e -> c25:p13:w [color="black", style="setlinewidth(3)", label=""];
+v3:e -> c26:p13:w [color="black", label=""];
+v4:e -> c27:p12:w [color="black", label=""];
+v5:e -> c27:p13:w [color="black", label=""];
+}

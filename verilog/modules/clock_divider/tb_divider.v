@@ -19,7 +19,7 @@ end
 // Initialize all variables
 initial begin        
   $display ("time\t clk out");	
-  $monitor ("%g\t %b     %b      %b", 
+  $monitor ("%g\t %b    %b", 
 	$time, clk, outcnt);
 
   $dumpfile("test.lxt");
