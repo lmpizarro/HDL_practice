@@ -2,5 +2,8 @@
 read_verilog divider.v
 hierarchy -check
 
+prep; show -stretch -prefix divider -format dot
+
 # high-level synthesis
 proc; opt; fsm; opt; memory; opt
+

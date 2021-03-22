@@ -10,3 +10,6 @@ python/myhdl/
 pwm.py
 *.swp
 obj_dir/
+*.json
+*.asc
+*.txt
