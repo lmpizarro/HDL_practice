@@ -15,10 +15,12 @@ References:
 ICE40
 
 [ice40 viewer](https://knielsen.github.io/ice40_viewer/ice40_viewer.html)
+
 [git hub ice40 viewer](https://github.com/knielsen/ice40_viewer)
 
 
 Cores
 
 [freerangefactory](https://freerangefactory.org/cores.html)
+
 [fabriziotappero](https://github.com/fabriziotappero/ip-cores)
