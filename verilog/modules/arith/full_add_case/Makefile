@@ -12,7 +12,7 @@ gtkwave: simulate
 	gtkwave $(PROJ).lxt
 
 clean: 
-	rm -rf $(PROJ).vvp *.vcd *.asc *.lxt  obj_dir
+	rm -rf $(PROJ).vvp *.vcd *.asc *.lxt  *.bin *.blif  obj_dir
 
 $(PROJ).bin: $(PROJ).pcf $(PROJ).v 
 	
