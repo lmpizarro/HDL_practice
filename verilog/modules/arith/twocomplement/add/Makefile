@@ -1,4 +1,4 @@
-PROJ = twocomplement
+PROJ = add_2c
 TB = $(PROJ)_tb.v
 SRCS = $(PROJ).v 
 

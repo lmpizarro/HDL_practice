@@ -1,4 +1,4 @@
-module twocomplement 
+module add_2c 
     # (parameter N = 4)
     (
         op1,

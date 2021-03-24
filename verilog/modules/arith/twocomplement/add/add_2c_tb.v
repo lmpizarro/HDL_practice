@@ -1,4 +1,4 @@
-module twocomplement_tb
+module add_2c_tb
     # (parameter N = 4)
     (
        op1,
@@ -18,8 +18,8 @@ module twocomplement_tb
        $display ("time\t op1 op2  out co vo");	
        $monitor ("%g\t %b   %b %b %b %b", $time, op1, op2, out, co, ov);
 
-       $dumpfile("twocomplement.lxt");
-       $dumpvars(0, twocomplement_tb);
+       $dumpfile("add_2c.lxt");
+       $dumpvars(0, add_2c_tb);
 
        #5  op1 = 1; op2 = 3;
        #5  op1 = 4'b1111; op2 = 4'b1111; // -1 -1
@@ -38,7 +38,7 @@ module twocomplement_tb
     end
 
 
-    twocomplement #(.N(N))  dut (
+    add_2c #(.N(N))  dut (
         .op1(op1),
         .op2(op2),
         .out(out),
