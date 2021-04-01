@@ -5,15 +5,14 @@ module alu_tb
         a0,
         b0,
         y,
-        co,
         ccr
     );
 
     output reg ci;
     output  reg [7:0] a0;
     output  reg [7:0] b0;
-    input wire [7:0] y, ccr;
-    input wire co;
+    input wire [7:0] y;
+    input wire [7:0] ccr;
     output reg  [3:0] select;
 
     reg clk;
@@ -27,7 +26,7 @@ module alu_tb
 
     initial begin
        $display ("time\t op1 op2  out");	
-       $monitor ("%g\t %b %b %b   %b %b %b", $time, ci, a0, b0, y, co, ccr);
+       $monitor ("%g\t %b %b %b   %b %b", $time, ci, a0, b0, y,  ccr);
 
        $dumpfile("alu.lxt");
        $dumpvars(0, alu_tb);
@@ -70,7 +69,6 @@ module alu_tb
         .a0(a0),
         .b0(b0),
         .y(y),
-        .co(co),
         .ccr(ccr)
     );
 

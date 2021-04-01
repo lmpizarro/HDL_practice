@@ -5,7 +5,6 @@ module alu_8b
         a0,
         b0,
         y,
-        co,
         ccr
     );
 
@@ -13,11 +12,12 @@ module alu_8b
     input  [3:0] select;
     input [7:0] a0;
     input [7:0] b0;
+
     output reg [7:0] y;
-    output reg co;
-    wire  coa, cob, con; 
     output [7:0] ccr;
 
+    reg co, gt, lt, eq;
+    wire  coa, cob, con; 
     wire [7:0] adder, suber, neg;
 
     add_8b add_s (ci, a0, b0, adder, coa);
@@ -38,12 +38,42 @@ module alu_8b
                 y=0; co = 0;
             end
         endcase
+
+     if (a0[7] != b0[7])
+     begin
+         gt = ~a0[7] & b0[7];
+         lt = ~gt;
+         eq = 1'b0;
+     end
+     else if (a0 > b0)
+     begin 
+         gt = 1'b1;
+         lt = 1'b0;
+         eq = 1'b0;
+     end
+         else  if (a0 < b0) 
+               begin
+                 gt = 1'b0;
+                 lt = 1'b1;
+                 eq = 1'b0;
+               end
+         else if (a0 == b0 ) begin
+
+                 gt = 1'b0;
+                 lt = 1'b0;
+                 eq = 1'b1;
+
+         end
+        
     end
 
-    // xxxxNZVC
-    assign ccr = {1'b0,1'b0,1'b0,1'b0,y[7],~|y,con,co}; 
-   
+    // GT|x|x|x|N|Z|V|C
+    assign ccr = {gt, lt, eq, 1'b0, y[7],~|y,con,co};
 
+    //
+    // jf a[7] != b[7]  ~a[7] & b[7]   -> a > b 
+    // else if a > b -> a > b
+  
 
 endmodule
 
