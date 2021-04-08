@@ -1,6 +1,6 @@
-PROJ = add
+PROJ = alu
 TB = $(PROJ)_tb.v
-SRCS = $(PROJ).v 
+SRCS = $(PROJ).v  add.v comp.v
 
 all: gtkwave
 

@@ -1,6 +1,6 @@
-PROJ = alu
+PROJ = decoins
 TB = $(PROJ)_tb.v
-SRCS = $(PROJ).v  add.v
+SRCS = $(PROJ).v 
 
 all: gtkwave
 
@@ -12,7 +12,7 @@ gtkwave: simulate
 	gtkwave $(PROJ).lxt
 
 clean: 
-	rm -rf $(PROJ).vvp *.vcd *.asc *.lxt  *.bin *.blif  obj_dir
+	rm -rf $(PROJ).vvp *.vcd *.txt *.lxt  obj_dir
 
 $(PROJ).bin: $(PROJ).pcf $(PROJ).v 
 	
@@ -20,10 +20,10 @@ $(PROJ).bin: $(PROJ).pcf $(PROJ).v
 	yosys -p "synth_ice40 -blif $(PROJ).blif" $(PROJ).v
 	
 	#-- Place & route
-	arachne-pnr -d 1k -p $(PROJ).pcf $(PROJ).blif -o $(PROJ).asc
+	arachne-pnr -d 1k -p $(PROJ).pcf $(PROJ).blif -o $(PROJ).txt
 	
 	#-- Generar binario final, listo para descargar en fgpa
-	icepack $(PROJ).asc $(PROJ).bin
+	icepack $(PROJ).txt $(PROJ).bin
 
 verilator:
 	verilator -Wall -cc $(PROJ).v
