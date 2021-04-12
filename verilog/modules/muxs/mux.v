@@ -1,4 +1,4 @@
-module twocomplement 
+module mux 
     (
         a,
         b,

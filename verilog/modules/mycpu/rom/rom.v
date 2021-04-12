@@ -1,8 +1,8 @@
 //-----------------------------------------------------
-// Design Name : rom_using_file
-// File Name   : rom_using_file.v
+// Design Name : rom
+// File Name   : rom.v
 // Function    : ROM using readmemh
-// Coder       : Deepak Kumar Tala
+// Coder       : Deepak Kumar Tala / Luis Maria Pizarro
 //-----------------------------------------------------
 module rom 
     #(
@@ -31,7 +31,7 @@ module rom
     end
 
      
-    always @* 
+    always @(a,d,en,ce)
        d = (ce && en) ? ROM[a] : 8'b0;
     
 

@@ -26,5 +26,3 @@ module pc
     end
 
     endmodule
-
-  

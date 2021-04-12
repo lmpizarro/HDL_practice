@@ -30,11 +30,11 @@ module mux_tb
        #5 a=1; b=1; s = 1;
 
 
-       #400 $finish;
+       #5 $finish;
     end
 
 
-    twocomplement  dut (
+    mux  dut (
         .a(a),
         .b(b),
         .s(s),
