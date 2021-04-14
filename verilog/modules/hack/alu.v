@@ -1,7 +1,7 @@
-module alu
+module ALU
     (
-        x,
-        y,
+        x,  // D
+        y,  // A  M
         zx,
         nx,
         zy,
