@@ -13,3 +13,7 @@ obj_dir/
 *.json
 *.asc
 *.txt
+drawing.svg
+xilinx
+cntr_intel
+cntr_sync_load

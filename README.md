@@ -1,5 +1,7 @@
 # HDL_practice
 
+Copyright Luis Maria Pizarro Etchegoyen
+
 References:
 
 [open fpga verilog tutorial](https://github.com/Obijuan/open-fpga-verilog-tutorial/wiki)
