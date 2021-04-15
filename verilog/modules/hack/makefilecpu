@@ -1,6 +1,6 @@
 PROJ = cpu
 TB = cpu_tb.v
-SRCS = $(PROJ).v 
+SRCS = $(PROJ).v alu.v
 
 all: gtkwave
 
