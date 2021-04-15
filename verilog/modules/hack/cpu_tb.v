@@ -24,8 +24,14 @@ module mux_tb
 
        $dumpfile("cpu.lxt");
        $dumpvars(0, mux_tb);
+       clk=0;rst=0;
+       #5 rst=1;
+       #5 rst=0;
+       #5 outROM = 16'b0110_1111_1100_1001;
+       #5 outROM = 16'b1110_1111_1100_1001;
+       #10 outROM = 16'b1111_1010_1010_1011;
 
-       #5 $finish;
+       #50 $finish;
     end
 
     // Clock generator
@@ -34,6 +40,7 @@ module mux_tb
     end
 
     CPU  dut (
+        .clk(clk),
         .outROM(outROM),  // 
         .outRAM(outRAM),  //
         .inRAM(inRAM),   //
