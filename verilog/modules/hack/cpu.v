@@ -5,8 +5,8 @@
           0xxxxxxxxx
 
     c-instruction
-          1xxac1c2c3c4c5c6d1d2d3j1j2j3 
-
+          1_x_x_a__c1_c2_c3_c4__c5_c6_d1_d2__d3_j1_j2_j3 
+         15        11           7            3
     * */
 
 module CPU
@@ -34,31 +34,57 @@ module CPU
     wire  jmp1, jmp2, jmp3;
     wire [5:0]  cALU;   // select ALU operation
     wire [N-1:0]  inALUnoD;   // input ALU noD
+    wire [N-1:0]  outALU;   // input ALU noD
+    wire [N-1:0]  inA;   // input ALU noD
 
     // Control signals
     wire mxALU, mxrA, enA, enM, enD, enPC;
 
 
     wire zr, ng;
-
-    assign {jmp1, jmp2, jmp3} = outROM[N-1] & {outROM[2], outROM[1], outROM[0]};
-    assign {enA, enM, enD} = outROM[N-1] & {outROM[5], outROM[4], outROM[3]};
-    assign cALU = outROM[N-1] & {outROM[11], outROM[10], outROM[9], outROM[8], outROM[7], outROM[6]};  
+    //      cALU      5  4  3  2   1  0                
+    //      1_x_x_a__c1_c2_c3_c4__c5_c6_d1_d2__d3_j1_j2_j3 
+    //     15        11           7            3
+    assign {jmp1, jmp2, jmp3} =  outROM[N-1] ?{outROM[2], outROM[1], outROM[0]}: 3'b000;
+    assign {enA, enM, enD} = outROM[N-1] ? {outROM[5], outROM[4], outROM[3]}: 3'b000;
+    assign cALU =  outROM[N-1] ? {outROM[11], outROM[10], outROM[9], outROM[8], outROM[7], outROM[6]}: 6'b000000;  
 
 
     // control signals
     assign mxALU = outROM[N-1] & outROM[12];
     assign mxrA = ~outROM[N-1];
 
+    // jump zero neg  load pc
     LOAD_PC_SIGNAL LS({jmp1, jmp2, jmp3}, zr, ng, enPC);
+    // mux_alu 
+    //     inputs: A, outRAM
+    //     select: mxALU
+    //     output: inALU-noD
+    //     mxALU = 0   ->   A
+    //     mxALU = 1   ->   outRAM
     MUX mux_alu(A, outRAM, mxALU, inALUnoD);
+    // mux_A 
+    //     inputs: outALU, outROM
+    //     select: mxrA
+    //     output: register A
+    //     mxrA = 0   -> outROM
+    //     mxrA = 1   -> outALU
+    MUX mux_A(outROM, outALU, mxrA, inA);
 
+    // ALU
+    //    inputs: D, inALUnoD, cALU
+    //    output: outALU, zr, ng
+    ALU alu(D, inALUnoD, cALU[5], cALU[4],cALU[3],cALU[2],cALU[1],cALU[0], outALU, zr, ng);
 
     always  @(posedge clk)begin
-        if (rst) PC <=0;
+        if (rst) begin
+            PC <=0;
+        end
         else
            if (enPC) PC <= A;
-           else PC <= PC + 1; 
+           else PC <= PC + 1;
+        if (enD) D <= outALU;
+        A <= inA;
     end
 
 endmodule

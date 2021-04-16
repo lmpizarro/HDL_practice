@@ -138,8 +138,8 @@ endmodule
 module MUX
     # (parameter N=16)
     (
-        a,  // and
-        b,  // sum
+        a,  // and s=0
+        b,  // sum s=1
         s,
         out
     );
