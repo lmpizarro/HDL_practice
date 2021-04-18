@@ -12,11 +12,11 @@
 module CPU
     (
         clk,
+        PC,      // = addROM
         outROM,  // 
         outRAM,  //
         inRAM,   //
         addRAM,  //
-        PC,      // = addROM
         enM,
         rst
     );
