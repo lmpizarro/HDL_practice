@@ -2,29 +2,23 @@ module mux_tb
     # (parameter N=16)
     (
         clk,     //           out
-        outRAM,  //           out
-        inRAM,   //           inp
-        addRAM,  //           inp
-        enM,     //           inp
         rst      //           out
     );
 
-    output reg  [N-1: 0] outRAM;
     output reg clk, rst;
 
-    input  [N-1: 0] inRAM, addRAM, PC;
-    input enM;
 
     initial begin
-       $display ("time\t a b  out");	
-       $monitor ("%g\t    %b %b %b", $time, inRAM, addRAM, enM);
+       $display ("time\t clk rst");	
+       $monitor ("%g\t  %b    %b", $time, clk, rst);
 
        $dumpfile("cpu.lxt");
        $dumpvars(0, mux_tb);
        clk=0;rst=0;
        #5 rst=1;
        #5 rst=0;
-
+       #50 rst =1;
+       #5  rst=0;
        #50 $finish;
     end
 
@@ -35,10 +29,6 @@ module mux_tb
 
     CPUROM  dut (
         .clk(clk),
-        .outRAM(outRAM),  //
-        .inRAM(inRAM),   //
-        .addRAM(addRAM),  //
-        .enM(enM),
         .rst(rst) 
     );
 endmodule

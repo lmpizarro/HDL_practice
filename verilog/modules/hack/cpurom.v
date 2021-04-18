@@ -1,26 +1,22 @@
 module CPUROM
-    # (parameter N=16)
+    # (parameter M=16)
     (
         clk,     //           in
-        outRAM,  //           in
         rst      //           in
-        inRAM,   //           out
-        addRAM,  //           out
-        enM,     //           out
     );
 
-    input [N-1: 0] outRAM;
     input clk, rst;
+    wire [M-1: 0] outRAM;
 
-    output reg [N-1: 0] inRAM, addRAM;
-    output reg enM;
+    wire [M-1: 0] inRAM, addRAM;
+    wire enM;
 
     ROM rom1(clk, PC, outROM);
     
-    //        in  in     in     in      out   out     out  in 
+    //        in  out     in     in      out   out     out  in 
     CPU cpu1(clk, PC, outROM, outRAM, inRAM, addRAM,  enM, rst);
 
-    RAM ram1(clk, inRAM, outRAM, addRAM, enM)
+    RAM ram1(clk, inRAM, outRAM, addRAM, enM);
 
 
 endmodule

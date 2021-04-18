@@ -43,11 +43,11 @@ module RAM
     )
 
     (
-        input                       clk    //clock signal for write operation
+        input                       clk,    //clock signal for write operation
         input      [DATA_WIDTH-1:0] wdata,       //data to be written
         output reg [DATA_WIDTH-1:0] rdata,       //read data
         input      [ADDR_WIDTH-1:0] addr,       //address for write operation
-        input                       we,          //write enable signal
+        input                       we          //write enable signal
     );
     
     localparam NWORDS = $pow(2, mem_size); 

@@ -1,6 +1,6 @@
-PROJ = cpu
+PROJ = cpurom
 TB = cpurom_tb.v
-SRCS = $(PROJ).v alu.v rom.v
+SRCS = $(PROJ).v cpu.v alu.v memories.v
 
 all: gtkwave
 
