@@ -6,9 +6,9 @@ module CPUROM
     );
 
     input clk, rst;
-    wire [M-1: 0] outRAM;
 
-    wire [M-1: 0] inRAM, addRAM;
+    wire [M-1: 0] outRAM, outROM;
+    wire [M-1: 0] inRAM, addRAM, PC;
     wire enM;
 
     ROM rom1(clk, PC, outROM);

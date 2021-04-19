@@ -17,8 +17,6 @@ module ROM
 
     input      [a_bits - 1: 0] address;    
     output reg [d_width - 1: 0] data; 
-    input                       en; 
-    input                       ce; 
     input                       clk; 
            
     reg [d_width - 1: 0] ROM [0 : NWORDS-1];
