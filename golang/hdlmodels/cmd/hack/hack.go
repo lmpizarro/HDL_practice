@@ -6,6 +6,7 @@ import (
     "log"
     "os"
 	"strings"
+	"errors"
 )
 
 
@@ -32,6 +33,37 @@ func cleanLine(line string) string {
 	return res
 }
 
+
+type Label struct {
+	label string
+	linenumber int
+}
+
+type Instruction struct {
+	instruction string
+	linenumber int
+}
+
+type Line struct {
+    linenumber int
+	text string
+	isA string
+}
+
+func createLine(line, mess string, j int) (Line, error) {
+
+	if mess == "LABEL" {
+		label := line[1:len(line) - 1]
+		return Line{j, label, mess}, nil
+	} else if mess == "LINE" {
+		
+		return Line{j+1, line, mess}, nil
+	} else {
+	    return Line{}, errors.New("bad line")
+	}
+
+}
+
 func extractSymbol(line string) (string, string){
 
 	lenline := len(line)
@@ -42,8 +74,9 @@ func extractSymbol(line string) (string, string){
 
 	if line[0] == '(' {
 		if line[len(line) - 1 ] == ')' {
-			return line, "ISSYMBOL"
+			return line, "LABEL"
 		} else {
+
 			return line, "FAIL"
 		}
 	} else {
@@ -51,7 +84,18 @@ func extractSymbol(line string) (string, string){
 	}
 } 
 
+func printInstrLine(lline Line){
+	j := lline.linenumber
+	if lline.isA == "LABEL" {
+		j = j + 1
+	} else {
+		fmt.Println(j, lline.isA, lline.text)
+	}
+}
+
 func main() {
+
+	var listLines []Line
 
     f, err := os.Open("prog.asm")
     if err != nil {
@@ -61,29 +105,31 @@ func main() {
 
     scanner := bufio.NewScanner(f)
 
-	j := 0
+	j := -1
     for scanner.Scan() {
 		line := cleanLine(scanner.Text())
 
 		line, mess := extractSymbol(line)
 
 		if len(line) > 0 {
-			if mess != "ISSYMBOL" {
-				if mess == "LINE" {
-        			fmt.Println(j, line)
-					j++
-				} else {
-					panic("FAIL")
-				}
-			} else {
-				fmt.Println(j, mess, line)
+
+			lline, err := createLine(line, mess, j)
+			if err != nil{
+				panic(err)
 			}
+			j = lline.linenumber
+			listLines = append(listLines, lline)
 		}
     }
 
     if err := scanner.Err(); err != nil {
         log.Fatal(err)
     }
+
+    for _, lline := range listLines {
+			
+			printInstrLine(lline)
+	}
 }
 
 /*
