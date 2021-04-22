@@ -1,4 +1,4 @@
-
+    
     // Computes RAM[1] = 1 + ... + RAM[0]
     @    i
     M   =1 // i = 1
@@ -27,3 +27,4 @@
 (END)
     @END
     0;JMP
+    i=0

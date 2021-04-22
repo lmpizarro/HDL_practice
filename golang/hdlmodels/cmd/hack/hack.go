@@ -1,134 +1,51 @@
 package main
 
 import (
-	"fmt"
-    "bufio"
-    "log"
-    "os"
-	"strings"
-	"errors"
+	"bufio"
+	"log"
+	"os"
+
+	cmp "github.com/lmpizarro/hdlmodels/pkg/compiler"
 )
-
-
-func trimLine(line string) string {
-	return strings.TrimSpace(line)
-}
-
-func stripComment(line string) string {
-	if strings.Contains(line, "//"){
-		pos := strings.Index(line, "//")
-		line = line[0:pos]
-	}
-	return line
-}
-
-
-func cleanLine(line string) string {
-	line = trimLine(line)
-
-	line = stripComment(line)
-
-	res := strings.ReplaceAll(line, " ", "")
-
-	return res
-}
-
-
-type Label struct {
-	label string
-	linenumber int
-}
-
-type Instruction struct {
-	instruction string
-	linenumber int
-}
-
-type Line struct {
-    linenumber int
-	text string
-	isA string
-}
-
-func createLine(line, mess string, j int) (Line, error) {
-
-	if mess == "LABEL" {
-		label := line[1:len(line) - 1]
-		return Line{j, label, mess}, nil
-	} else if mess == "LINE" {
-		
-		return Line{j+1, line, mess}, nil
-	} else {
-	    return Line{}, errors.New("bad line")
-	}
-
-}
-
-func extractSymbol(line string) (string, string){
-
-	lenline := len(line)
-
-	if lenline < 2 {
-		return line, "FAIL"
-	} 
-
-	if line[0] == '(' {
-		if line[len(line) - 1 ] == ')' {
-			return line, "LABEL"
-		} else {
-
-			return line, "FAIL"
-		}
-	} else {
-		return line, "LINE"
-	}
-} 
-
-func printInstrLine(lline Line){
-	j := lline.linenumber
-	if lline.isA == "LABEL" {
-		j = j + 1
-	} else {
-		fmt.Println(j, lline.isA, lline.text)
-	}
-}
 
 func main() {
 
-	var listLines []Line
+	var listLines []cmp.Line
 
-    f, err := os.Open("prog.asm")
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer f.Close()
+	f, err := os.Open("prog.asm")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
 
-    scanner := bufio.NewScanner(f)
+	scanner := bufio.NewScanner(f)
 
 	j := -1
-    for scanner.Scan() {
-		line := cleanLine(scanner.Text())
+	for scanner.Scan() {
+		line := cmp.CleanLine(scanner.Text())
 
-		line, mess := extractSymbol(line)
+		line, mess := cmp.ExtractSymbol(line)
 
 		if len(line) > 0 {
 
-			lline, err := createLine(line, mess, j)
-			if err != nil{
+			lline, err := cmp.CreateLine(line, mess, j)
+			if err != nil {
 				panic(err)
 			}
-			j = lline.linenumber
+			j = lline.Linenumber
 			listLines = append(listLines, lline)
 		}
-    }
+	}
 
-    if err := scanner.Err(); err != nil {
-        log.Fatal(err)
-    }
 
-    for _, lline := range listLines {
-			
-			printInstrLine(lline)
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	listLines = cmp.ReplaceLabels(listLines)
+
+	for _,v := range listLines {
+		v.Print()
 	}
 }
 
