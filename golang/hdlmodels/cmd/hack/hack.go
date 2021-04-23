@@ -42,7 +42,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	listLines = cmp.ReplaceLabels(listLines)
+	listLines, definlines := cmp.ReplaceLabels(listLines)
+
+	log.Println(definlines)
 
 	for _,v := range listLines {
 		v.Print()
@@ -51,6 +53,8 @@ func main() {
 
 /*
 		// Computes RAM[1] = 1 + ... + RAM[0]
+		#i=0
+		#sum=1
 		@i
 		M=1 // i = 1
 		@sum

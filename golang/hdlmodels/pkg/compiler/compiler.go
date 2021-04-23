@@ -30,17 +30,6 @@ func CleanLine(line string) string {
 }
 
 //interface definition
-
-type Label struct {
-	label      string
-	linenumber int
-}
-
-type Instruction struct {
-	instruction string
-	linenumber  int
-}
-
 type HackPrint interface {
 	Print()
 	Filter()
@@ -55,20 +44,8 @@ type Line struct {
 const LABEL string = "LABEL"
 const LINE string = "LINE"
 const FAIL string = "FAIL"
+const DEFINITION string = "DEFINITION"
 
-func CreateLine(line, mess string, j int) (Line, error) {
-
-	if mess == LABEL {
-		label := line[1 : len(line)-1]
-		return Line{j, label, mess}, nil
-	} else if mess == LINE {
-
-		return Line{j + 1, line, mess}, nil
-	} else {
-		return Line{}, errors.New("bad line")
-	}
-
-}
 
 func ExtractSymbol(line string) (string, string) {
 
@@ -85,9 +62,27 @@ func ExtractSymbol(line string) (string, string) {
 
 			return line, FAIL
 		}
+	} else if line[0] == '#' {
+		return line, DEFINITION
 	} else {
 		return line, LINE
 	}
+}
+
+
+func CreateLine(line, isa string, j int) (Line, error) {
+
+	if isa == LABEL {
+		label := line[1 : len(line)-1]
+		return Line{j, label, isa}, nil
+	} else if isa == LINE {
+		return Line{j + 1, line, isa}, nil
+	} else if isa == DEFINITION {
+		return Line{j, line, isa}, nil
+	} else {
+		return Line{}, errors.New("bad line")
+	}
+
 }
 
 func (lline Line) Print() {
@@ -95,9 +90,10 @@ func (lline Line) Print() {
 	fmt.Println(j, lline.IsA, lline.Text)
 }
 
-func Separate(lines []Line) ([]Line, []Line) {
+func Separate(lines []Line) ([]Line, []Line, []Line) {
 	var instrlines []Line
 	var labellines []Line
+	var definlines []Line
 
 	for _, v := range lines {
 		if v.IsA == LINE {
@@ -105,17 +101,21 @@ func Separate(lines []Line) ([]Line, []Line) {
 		} else if v.IsA == LABEL {
 			v.Linenumber = v.Linenumber + 1
 			labellines = append(labellines, v)
+		} else if v.IsA == DEFINITION {
+			v.Text = v.Text[1:]
+			definlines = append(definlines, v)
 		} else {
 			continue
 		}
 	}
-	return instrlines, labellines
+
+	return instrlines, labellines, definlines
 }
 
-func ReplaceLabels(listLines []Line) []Line {
+func ReplaceLabels(listLines []Line) ([]Line, []Line) {
 
 	
-	finstlines, flabellines := Separate(listLines)
+	finstlines, flabellines, definlines := Separate(listLines)
 
 	for _, lline := range flabellines {
 		search_str := "@" + lline.Text
@@ -128,5 +128,5 @@ func ReplaceLabels(listLines []Line) []Line {
 			}
 		}
 	}
-	return finstlines
+	return finstlines, definlines
 }

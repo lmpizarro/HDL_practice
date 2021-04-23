@@ -1,4 +1,5 @@
-    
+    #i=10
+    #sum=9 
     // Computes RAM[1] = 1 + ... + RAM[0]
     @    i
     M   =1 // i = 1
