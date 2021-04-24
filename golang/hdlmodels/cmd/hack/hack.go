@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 
@@ -36,19 +37,21 @@ func main() {
 			listLines = append(listLines, lline)
 		}
 	}
-
-
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 
-	listLines, definlines := cmp.ReplaceLabels(listLines)
+	listLines, _ = cmp.ReplaceLabels(listLines)
 
-	log.Println(definlines)
+	// log.Println(definlines)
 
-	for _,v := range listLines {
+	// fmt.Println(cmp.Defmap)
+
+	for i, v := range listLines {
+		fmt.Printf("%d ", i)
 		v.Print()
 	}
+
 }
 
 /*

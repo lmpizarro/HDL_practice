@@ -47,6 +47,13 @@ const FAIL string = "FAIL"
 const DEFINITION string = "DEFINITION"
 
 
+var Defmap = map[string]string{
+	"R0": "0",
+	"R1": "1",
+}
+
+
+
 func ExtractSymbol(line string) (string, string) {
 
 	lenline := len(line)
@@ -112,8 +119,11 @@ func Separate(lines []Line) ([]Line, []Line, []Line) {
 	return instrlines, labellines, definlines
 }
 
-func ReplaceLabels(listLines []Line) ([]Line, []Line) {
+func ParseDefinLine(Line) bool {
+	return true
+}
 
+func ReplaceLabels(listLines []Line) ([]Line, []Line) {
 	
 	finstlines, flabellines, definlines := Separate(listLines)
 
@@ -128,5 +138,32 @@ func ReplaceLabels(listLines []Line) ([]Line, []Line) {
 			}
 		}
 	}
+
+	for _, defi := range definlines {
+		a := strings.Split(defi.Text, "=")
+
+		if len(a) == 2 {
+			Defmap[a[0]] = a[1]
+		} else {
+			panic("error")
+		}
+		
+	}
+
+	for i,v := range finstlines {
+		if v.Text[0] == '@'{
+
+			k := Defmap[v.Text[1:]]
+			fmt.Println(k, v.Text)
+			if k != "" {
+				replace_str := "@" + k
+				v.Text = replace_str
+				fmt.Println(k, v.Text)
+                finstlines[i] = v
+			}
+		}
+	}
+
 	return finstlines, definlines
 }
+
