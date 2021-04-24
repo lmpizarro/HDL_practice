@@ -21,6 +21,7 @@ func StripComment(line string) string {
 }
 
 func CleanLine(line string) string {
+	log.Println("CleanLine")
 	line = TrimLine(line)
 
 	line = StripComment(line)
@@ -40,12 +41,14 @@ type Line struct {
 	Linenumber int
 	Text       string
 	IsA        string
+	Binrep     string
 }
 
 const LABEL string = "LABEL"
 const LINE string = "LINE"
 const FAIL string = "FAIL"
 const DEFINITION string = "DEFINITION"
+const BADFORMAT = "BAD FORMAT"
 
 
 var Defmap = map[string]string{
@@ -116,6 +119,8 @@ var Compmap = map[string]string{
 
 func ExtractSymbol(line string) (string, string) {
 
+	log.Println("ExtractSymbol")
+
 	lenline := len(line)
 
 	if lenline < 2 {
@@ -138,14 +143,15 @@ func ExtractSymbol(line string) (string, string) {
 
 
 func CreateLine(line, isa string, j int) (Line, error) {
+	log.Println("CreateLine")
 
 	if isa == LABEL {
 		label := line[1 : len(line)-1]
-		return Line{j, label, isa}, nil
+		return Line{j, label, isa, ""}, nil
 	} else if isa == LINE {
-		return Line{j + 1, line, isa}, nil
+		return Line{j + 1, line, isa, ""}, nil
 	} else if isa == DEFINITION {
-		return Line{j, line, isa}, nil
+		return Line{j, line, isa, ""}, nil
 	} else {
 		return Line{}, errors.New("bad line")
 	}
@@ -158,6 +164,7 @@ func (lline Line) Print() {
 }
 
 func Separate(lines []Line) ([]Line, []Line, []Line) {
+	log.Println("Separate")
 	var instrlines []Line
 	var labellines []Line
 	var definlines []Line
@@ -184,7 +191,7 @@ func ParseDefinLine(Line) bool {
 }
 
 func ReplaceLabels(listLines []Line) ([]Line, []Line) {
-	
+	log.Println("ReplaceLabels")	
 	finstlines, flabellines, definlines := Separate(listLines)
 
 	for _, lline := range flabellines {
@@ -214,11 +221,9 @@ func ReplaceLabels(listLines []Line) ([]Line, []Line) {
 		if v.Text[0] == '@'{
 
 			k := Defmap[v.Text[1:]]
-			fmt.Println(k, v.Text)
 			if k != "" {
 				replace_str := "@" + k
 				v.Text = replace_str
-				fmt.Println(k, v.Text)
                 finstlines[i] = v
 			}
 		}
@@ -237,6 +242,7 @@ func IntToBinary(num string) (string, error) {
 }
 
 func ParseLine(v Line) (string, error) {
+	log.Println("ParseLine")
 	var jmp   string 
 	var dest  string
 	var comp  string
@@ -256,10 +262,14 @@ func ParseLine(v Line) (string, error) {
 			dest = "null"
 			comp = c[0]
 		} else {
-			return "", errors.New("BAD FORMAT")
+			return "", errors.New(BADFORMAT)
 		}
 
 	    inst = "111" + Compmap[comp] + Destmap[dest] + Jumpmap[jmp] 
+		if len(inst) < 16 {
+			return "", errors.New(BADFORMAT)
+		}
+
 		return inst, nil
 	} 
 	
@@ -269,7 +279,11 @@ func ParseLine(v Line) (string, error) {
 		comp = spltEQ[1]
 		jmp = "null" 
 
-	    inst = "111" + Compmap[comp] + Destmap[dest] + Jumpmap[jmp] 
+	    inst = "111" + Compmap[comp] + Destmap[dest] + Jumpmap[jmp]
+		if len(inst) < 16 {
+			return "", errors.New(BADFORMAT)
+		}
+
 		return inst, nil
 	} else {
 	
@@ -278,30 +292,31 @@ func ParseLine(v Line) (string, error) {
 		if len(spltA) == 2 {
 			inst__, err := IntToBinary(spltA[1])
 			if err != nil {
-				log.Fatal("BAD FORMAT A")
-				return "", errors.New("BAD FORMAT")
+				log.Fatal(BADFORMAT)
+				return "", errors.New(BADFORMAT)
 			}	
 			return inst__, nil
 		} else {
-			log.Fatal("BAD FORMAT A")
-			return "", errors.New("BAD FORMAT")
+			log.Fatal(BADFORMAT)
+			return "", errors.New(BADFORMAT)
 		}
   }
 }
 
-func ParseCAinst(listLines []Line) []Line {
+func ParseCAinst(listLines []Line) ([]Line, error) {
 	log.Println("ParseCinst")
 
 	for i, v := range listLines {
 	
 		inst, err := ParseLine(v)
 		if err != nil {
-			panic(err)
+			return listLines, errors.New(err.Error())
 		}
-		fmt.Println(i, inst)
+		v.Binrep = inst
+		listLines[i] = v
 
 	}
-	return listLines
+	return listLines, nil
 }
 
 // dest = comp ; jump

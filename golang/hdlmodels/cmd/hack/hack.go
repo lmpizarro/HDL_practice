@@ -2,11 +2,10 @@ package main
 
 import (
 	"bufio"
-	// "fmt"
+	"fmt"
 	"log"
 	"os"
-
-	// "strings"
+	"strings"
 
 	cmp "github.com/lmpizarro/hdlmodels/pkg/compiler"
 )
@@ -14,10 +13,21 @@ import (
 func main() {
 
 	var listLines []cmp.Line
+	var binaryProgram string
+    var filebasename string
 
-	f, err := os.Open("prog.asm")
+	filename := "prog.asm"
+	splitfilename := strings.Split(filename, ".")
+	
+	if len(splitfilename) != 2 {
+		panic("BAD FILE NAME")
+	} else {
+		filebasename = splitfilename[0]
+	}
+
+	f, err := os.Open(filename)
 	if err != nil {
-		log.Fatal(err)
+		panic(err.Error())
 	}
 	defer f.Close()
 
@@ -45,14 +55,23 @@ func main() {
 
 	listLines, _ = cmp.ReplaceLabels(listLines)
 
-	// log.Println(definlines)
+	listLines, _= cmp.ParseCAinst(listLines)
 
-	// fmt.Println(cmp.Defmap)
+	for _,v := range listLines {
+		binIns := fmt.Sprintf("%s\n", v.Binrep)
+		binaryProgram = binaryProgram + binIns
+	}
 
-	listLines = cmp.ParseCAinst(listLines)
+	fmt.Print(binaryProgram)
 
-	
+	filebinname := filebasename + ".bin"
+	f, err1 := os.Create(filebinname)
+	if err1 != nil {
+		panic("open file error")
+	}
+	defer f.Close()
 
+	f.WriteString(binaryProgram)
 }
 
 /*
