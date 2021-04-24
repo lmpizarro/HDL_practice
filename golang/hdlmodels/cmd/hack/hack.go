@@ -49,7 +49,7 @@ func main() {
 
 	// fmt.Println(cmp.Defmap)
 
-	listLines = cmp.ParseCinst(listLines)
+	listLines = cmp.ParseCAinst(listLines)
 
 	
 

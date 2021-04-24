@@ -233,55 +233,74 @@ func IntToBinary(num string) (string, error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("%015b", argA), nil
+	return fmt.Sprintf("%016b", argA), nil
 }
 
-func ParseCinst(listLines []Line) []Line {
-	log.Println("ParseCinst")
-
+func ParseLine(v Line) (string, error) {
 	var jmp   string 
 	var dest  string
 	var comp  string
+	var inst string
+
+	spltEQ := strings.Split(v.Text, "=")  
+	spltJP := strings.Split(v.Text, ";")
+
+	if len(spltJP) == 2 {  // D = M+1;JNZ or D;JNZ
+		
+		jmp = spltJP[1]
+		c := strings.Split(spltJP[0], "=") 
+		if len(c) == 2 { // D = M+1;JNZ 
+			dest = c[0]
+			comp = c[1]
+		} else if len(c) == 1 {  // D = M+1;JNZ or D;JNZ
+			dest = "null"
+			comp = c[0]
+		} else {
+			return "", errors.New("BAD FORMAT")
+		}
+
+	    inst = "111" + Compmap[comp] + Destmap[dest] + Jumpmap[jmp] 
+		return inst, nil
+	} 
+	
+	if len(spltEQ) == 2 {
+		//  X = Y
+		dest = spltEQ[0]
+		comp = spltEQ[1]
+		jmp = "null" 
+
+	    inst = "111" + Compmap[comp] + Destmap[dest] + Jumpmap[jmp] 
+		return inst, nil
+	} else {
+	
+		spltA := strings.Split(v.Text, "@")
+		
+		if len(spltA) == 2 {
+			inst__, err := IntToBinary(spltA[1])
+			if err != nil {
+				log.Fatal("BAD FORMAT A")
+				return "", errors.New("BAD FORMAT")
+			}	
+			return inst__, nil
+		} else {
+			log.Fatal("BAD FORMAT A")
+			return "", errors.New("BAD FORMAT")
+		}
+  }
+}
+
+func ParseCAinst(listLines []Line) []Line {
+	log.Println("ParseCinst")
 
 	for i, v := range listLines {
-		
-		spltEQ := strings.Split(v.Text, "=")  // D= M+1;JNZ
-
-		spltJP := strings.Split(v.Text, ";")
-
-        if len(spltJP) == 2 {
-			fmt.Println("HAS JUMP")
-			jmp = spltJP[1]
-			c := strings.Split(spltJP[0], "=")
-			if len(c) == 2 {
-				dest = c[0]
-				comp = c[1]
-			} else {
-				dest = "null"
-				comp = c[0]
-			}
-		} else if len(spltEQ) == 2 {
-			//  X = Y
-			dest = spltEQ[0]
-			comp = spltEQ[1]
-			jmp = "null" 
-
-		} else {
-			spltA := strings.Split(v.Text, "@")
-			
-			if len(spltA) == 2 {
-				argA, err := IntToBinary(spltA[1])
-				if err != nil {
-					panic("BAD FORMAT A INS")
-				}
-				fmt.Printf("A inst 0%s\n", argA )
-			}
-			continue
+	
+		inst, err := ParseLine(v)
+		if err != nil {
+			panic(err)
 		}
-		cinst := "111" + Destmap[dest] + Compmap[comp] + Jumpmap[jmp] 
-		fmt.Println(i, "HAS EQ", v.Text, cinst)
-	}
+		fmt.Println(i, inst)
 
+	}
 	return listLines
 }
 

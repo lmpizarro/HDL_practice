@@ -28,4 +28,3 @@
 (END)
     @END
     0;JMP
-    i=0
