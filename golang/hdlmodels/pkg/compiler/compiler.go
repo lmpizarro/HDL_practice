@@ -3,6 +3,7 @@ package compiler
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -50,9 +51,68 @@ const DEFINITION string = "DEFINITION"
 var Defmap = map[string]string{
 	"R0": "0",
 	"R1": "1",
+	"R2": "2",
+	"R3": "3",
+	"R4": "4",
+	"R5": "5",
+	"R6": "6",
+	"R7": "7",
 }
 
 
+var Destmap = map[string]string{
+	"null": "000",
+	"M"   : "001",
+	"D"   : "010",
+	"MD"  : "011",
+	"A"   : "100",
+	"AM"  : "101",
+	"AD"  : "110",
+	"AMD" : "111",
+}
+
+
+var Jumpmap = map[string]string{
+	"null": "000",
+	"JGT"   : "001",
+	"JEQ"   : "010",
+	"JGE"   : "011",
+	"JLT"   : "100",
+	"JNE"   : "101",
+	"JLE"   : "110",
+	"JMP"   : "111",
+}
+
+var Compmap = map[string]string{
+	"0":   "0101010",
+	"1":   "0111111",
+	"-1":  "0111010",
+	"D":   "0001100",
+	"A":   "0110000",
+	"!D":  "0001101",
+	"!A":  "0110001",
+	"-D":  "0001111",
+	"-A":  "0110011",
+	"D+1": "0011111",
+	"A+1": "0110111",
+	"D-1": "0001110",
+	"A-1": "0110010",
+	"D+A": "0000010",
+	"D-A": "0010011",
+	"A-D": "0000111",
+	"D&A": "0000000",
+	"D|A": "0010101",
+	"M":   "1110000",
+	"!M":  "1110001",
+	"-M":  "1110011",
+	"M+1": "1110111",
+	"M-1": "1110010",
+	"D+M": "1000010",
+	"D-M": "1010011",
+	"M-D": "1000111",
+	"D&M": "1000000",
+	"D|M": "1010101",
+}	
 
 func ExtractSymbol(line string) (string, string) {
 
@@ -166,4 +226,66 @@ func ReplaceLabels(listLines []Line) ([]Line, []Line) {
 
 	return finstlines, definlines
 }
+
+func IntToBinary(num string) (string, error) {
+    argA, err := strconv.ParseInt(num, 10, 16)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%015b", argA), nil
+}
+
+func ParseCinst(listLines []Line) []Line {
+	log.Println("ParseCinst")
+
+	var jmp   string 
+	var dest  string
+	var comp  string
+
+	for i, v := range listLines {
+		
+		spltEQ := strings.Split(v.Text, "=")  // D= M+1;JNZ
+
+		spltJP := strings.Split(v.Text, ";")
+
+        if len(spltJP) == 2 {
+			fmt.Println("HAS JUMP")
+			jmp = spltJP[1]
+			c := strings.Split(spltJP[0], "=")
+			if len(c) == 2 {
+				dest = c[0]
+				comp = c[1]
+			} else {
+				dest = "null"
+				comp = c[0]
+			}
+		} else if len(spltEQ) == 2 {
+			//  X = Y
+			dest = spltEQ[0]
+			comp = spltEQ[1]
+			jmp = "null" 
+
+		} else {
+			spltA := strings.Split(v.Text, "@")
+			
+			if len(spltA) == 2 {
+				argA, err := IntToBinary(spltA[1])
+				if err != nil {
+					panic("BAD FORMAT A INS")
+				}
+				fmt.Printf("A inst 0%s\n", argA )
+			}
+			continue
+		}
+		cinst := "111" + Destmap[dest] + Compmap[comp] + Jumpmap[jmp] 
+		fmt.Println(i, "HAS EQ", v.Text, cinst)
+	}
+
+	return listLines
+}
+
+// dest = comp ; jump
+// D = M, dest = D, comp = M
+// dest = Destmap["D"], comp = Compmap["M"]  
 

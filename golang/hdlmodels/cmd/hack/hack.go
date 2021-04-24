@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
-	"fmt"
+	// "fmt"
 	"log"
 	"os"
+
+	// "strings"
 
 	cmp "github.com/lmpizarro/hdlmodels/pkg/compiler"
 )
@@ -47,10 +49,9 @@ func main() {
 
 	// fmt.Println(cmp.Defmap)
 
-	for i, v := range listLines {
-		fmt.Printf("%d ", i)
-		v.Print()
-	}
+	listLines = cmp.ParseCinst(listLines)
+
+	
 
 }
 
