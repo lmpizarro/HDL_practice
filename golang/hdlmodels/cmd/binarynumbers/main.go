@@ -15,6 +15,7 @@ func main() {
 		fmt.Println(binrep.TwoComplementToInt(br))
 	}
 
+
 	a := []int{1, 1, 1, 1}
 	b := []int{0, 1, 0, 0}
 
@@ -53,4 +54,7 @@ func main() {
 	ss := signal.IntSin(4, samples, 3)
 
 	fmt.Println(ss, samples)
+
+
+	fmt.Println(binrep.IntToBinStr(3, 15))
 }

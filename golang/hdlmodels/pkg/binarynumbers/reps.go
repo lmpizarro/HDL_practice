@@ -2,6 +2,8 @@ package binarynumbers
 
 import (
 	"math"
+	"strings"
+	"strconv"
 )
 
 //
@@ -22,7 +24,7 @@ func IntToBin(b, N int) []int {
 	var bin_rep []int
 
 	res := float64(b / 2)
-	rem := b - 2*int(res)
+	rem := b - 2 * int(res)
 
 	bin_rep = append(bin_rep, rem)
 
@@ -42,6 +44,24 @@ func IntToBin(b, N int) []int {
 	}
 
 	return bin_rep
+}
+
+func IntToBinStr(b, N int) string {
+	var restring []string
+
+	res := IntToBin(b, N)
+
+	for _,v := range res {
+		restring = append(restring , strconv.FormatInt(int64(v), 2))
+	} 
+
+    j := N-1
+	for i := 0; i < len(restring)/2; i++ {
+		restring[i], restring[j-i] = restring[j-i], restring[i]
+    }
+
+	restring_ := strings.Join(restring, "")
+    return restring_
 }
 
 //
