@@ -22,40 +22,48 @@ module CPU
     );
 
     localparam N = 16;
-
+    // out from ROM program memory
+    // out from RAM data memory
     input  [N-1: 0] outROM, outRAM;
-    output reg [N-1: 0] inRAM, addRAM, PC;
-
+    // write data to RAM
+    // addres RAM write data
+    output  [N-1: 0] inRAM, addRAM;  
+    // enable write to data memory RAM
     output enM;
+
     input  rst, clk;
 
-    reg [N-1: 0] A, D;
-
-    wire  jmp1, jmp2, jmp3;
+    wire  jmp1, jmp2, jmp3, enA, enM, enD;
     wire [5:0]  cALU;   // select ALU operation
+
     wire [N-1:0]  inALUnoD;   // input ALU noD
     wire [N-1:0]  outALU;   // input ALU noD
-    wire [N-1:0]  inA;   // input ALU noD
+    wire [N-1:0]  inA, A, D;   // input ALU noD
+    output [N-1:0]  PC;   // input ALU noD
 
     // Control signals
-    wire mxALU, mxrA, enA, enM, enD, enPC;
-
-
+    // mux ALU, mux A, load PC
+    wire mxALU, mxrA, loadPC;
+    // ALU status operation
     wire zr, ng;
+
     //      cALU      5  4  3  2   1  0                
     //      1_x_x_a__c1_c2_c3_c4__c5_c6_d1_d2__d3_j1_j2_j3 
     //     15        11           7            3
-    assign {jmp1, jmp2, jmp3} =  outROM[N-1] ?{outROM[2], outROM[1], outROM[0]}: 3'b000;
-    assign {enA, enM, enD} = outROM[N-1] ? {outROM[5], outROM[4], outROM[3]}: 3'b000;
+    assign jmp1 = outROM[N-1] & outROM[2];
+    assign jmp2 = outROM[N-1] & outROM[1];
+    assign jmp3 = outROM[N-1] & outROM[0];
+
+    assign {enA, enD, enM} = outROM[N-1] ? {outROM[5], outROM[4], outROM[3]}: 3'b100;
     assign cALU =  outROM[N-1] ? {outROM[11], outROM[10], outROM[9], outROM[8], outROM[7], outROM[6]}: 6'b000000;  
 
 
     // control signals
     assign mxALU = outROM[N-1] & outROM[12];
-    assign mxrA = ~outROM[N-1];
+    assign mxrA = outROM[N-1];  // 0 inst A 1 inst C
 
     // jump zero neg  load pc
-    LOAD_PC_SIGNAL LS({jmp1, jmp2, jmp3}, zr, ng, enPC);
+    LOAD_PC_SIGNAL LS({jmp1, jmp2, jmp3}, zr, ng, loadPC);
     // mux_alu 
     //     inputs: A, outRAM
     //     select: mxALU
@@ -76,16 +84,12 @@ module CPU
     //    output: outALU, zr, ng
     ALU alu(D, inALUnoD, cALU[5], cALU[4],cALU[3],cALU[2],cALU[1],cALU[0], outALU, zr, ng);
 
-    always  @(posedge clk)begin
-        if (rst) begin
-            PC <=0;
-        end
-        else
-           if (enPC) PC <= A;
-           else PC <= PC + 1;
-        if (enD) D <= outALU;
-        A <= inA;
-    end
+    assign addRAM = A;
+    assign inRAM = outALU;
+
+    Register16 AA(inA, clk, rst, enA|mxrA, A);
+    Register16 DD(outALU, clk, rst, enD, D);
+    Counter16  CC(A, clk, rst, loadPC, PC);
 
 endmodule
 
@@ -158,4 +162,45 @@ module LOAD_PC_SIGNAL
 
     end
 
+endmodule
+
+module Register16
+    (
+        input [15:0] D, 
+        input clk, 
+        input reset,
+        input load,
+        output reg [15:0] Q
+    );
+
+    always @(posedge clk)
+
+     if (reset)
+     begin
+     Q <= 4'b0;
+     end else if (load)
+     begin
+     Q <= D;
+     end
+
+endmodule
+
+module Counter16
+    (
+        input [15:0] D, 
+        input clk, 
+        input reset,
+        input load,
+        output reg [15:0] Q
+    );
+
+   // A synchronous load clear counter
+   always @ (posedge clk) begin
+      if (reset)
+         Q <= 0;
+      else if (load)
+         Q <= D;
+      else
+         Q <= Q + 1;
+   end
 endmodule

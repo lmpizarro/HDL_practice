@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	cmp "github.com/lmpizarro/hdlmodels/pkg/compiler"
@@ -14,11 +15,11 @@ func main() {
 
 	var listLines []cmp.Line
 	var binaryProgram string
-    var filebasename string
+	var filebasename string
 
-	filename := "prog.asm"
+	filename := "prog3.asm"
 	splitfilename := strings.Split(filename, ".")
-	
+
 	if len(splitfilename) != 2 {
 		panic("BAD FILE NAME")
 	} else {
@@ -55,9 +56,11 @@ func main() {
 
 	listLines, _ = cmp.ReplaceLabels(listLines)
 
-	listLines, _= cmp.ParseCAinst(listLines)
+	listLines, _ = cmp.ParseCAinst(listLines)
 
-	for _,v := range listLines {
+	for _, v := range listLines {
+		hexa := parseBinToHex(v.Binrep)
+		fmt.Printf("%s\n", hexa)
 		binIns := fmt.Sprintf("%s\n", v.Binrep)
 		binaryProgram = binaryProgram + binIns
 	}
@@ -74,35 +77,22 @@ func main() {
 	f.WriteString(binaryProgram)
 }
 
+func parseBinToHex(s string) string {
+	ui, err := strconv.ParseUint(s, 2, 64)
+	if err != nil {
+		return "error"
+	}
+
+	return fmt.Sprintf("%04X", ui)
+}
+
 /*
-		// Computes RAM[1] = 1 + ... + RAM[0]
-		#i=0
-		#sum=1
-		@i
-		M=1 // i = 1
-		@sum
-		M=0 // sum = 0
-	(LOOP)
-		@i // if i>RAM[0] goto STOP
-		D=M
-		@R0
-		D=D-M
-		@STOP
-		D;JGT
-		@i // sum += i
-		D=M
-		@sum
-		M=D+M
-		@i // i++
-		M=M+1
-		@LOOP // goto LOOP
-		0;JMP
-	(STOP)
-		@sum
-		D=M
-		@R1
-		M=D // RAM[1] = the sum
-	(END)
-		@END
-		0;JMP
+
+rst PC < 0
+saca instrucc
+decode instr
+ejecuta instr
+incr pc
+
+
 */

@@ -1,4 +1,4 @@
-module mux_tb
+module cpurom_tb
     # (parameter N=16)
     (
         clk,     //           out
@@ -12,14 +12,13 @@ module mux_tb
        $display ("time\t clk rst");	
        $monitor ("%g\t  %b    %b", $time, clk, rst);
 
-       $dumpfile("cpu.lxt");
-       $dumpvars(0, mux_tb);
+       $dumpfile("cpurom.lxt");
+       $dumpvars(0, cpurom_tb);
        clk=0;rst=0;
        #5 rst=1;
        #5 rst=0;
-       #50 rst =1;
        #5  rst=0;
-       #50 $finish;
+       #750 $finish;
     end
 
     // Clock generator
