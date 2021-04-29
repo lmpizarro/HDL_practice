@@ -5,7 +5,8 @@
 .vscode
 *.vcd
 python/migen/
-python/nmigen/
+python/nmigen/*.v
+python/nmigen/*.vcd
 python/myhdl/
 pwm.py
 *.swp
