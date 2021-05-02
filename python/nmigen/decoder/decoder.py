@@ -1,6 +1,7 @@
 from nmigen import *
 from nmigen.cli import main
 from nmigen.back import verilog
+from nmigen.back.pysim import *
 import math
 
 
@@ -49,6 +50,42 @@ class DECODER_2_4(Elaboratable):
         return m
 
 
+class DECODER_4_16(Elaboratable):
+    def __init__(self, width=4):
+        self.sel = Signal(width)
+
+        n_outs = int(math.pow(2, width))
+
+        self.o = Signal(n_outs, reset=0)
+  
+
+    def elaborate(self, platform):
+        m = Module()
+        # m.d.comb += self.o.eq(1 << self.sel)
+
+        with m.Switch(self.sel):
+            with m.Case(0): m.d.comb += self.o.eq(1<<0)
+            with m.Case(1): m.d.comb += self.o.eq(1<<1)
+            with m.Case(2): m.d.comb += self.o.eq(1<<2)
+            with m.Case(3): m.d.comb += self.o.eq(1<<3)
+            with m.Case(4): m.d.comb += self.o.eq(1<<4)
+            with m.Case(5): m.d.comb += self.o.eq(1<<5)
+            with m.Case(6): m.d.comb += self.o.eq(1<<6)
+            with m.Case(7): m.d.comb += self.o.eq(1<<7)
+            with m.Case(8): m.d.comb += self.o.eq(1<<8)
+            with m.Case(9): m.d.comb += self.o.eq(1<<9)
+            with m.Case(10): m.d.comb += self.o.eq(1<<10)
+            with m.Case(11): m.d.comb += self.o.eq(1<<11)
+            with m.Case(12): m.d.comb += self.o.eq(1<<12)
+            with m.Case(13): m.d.comb += self.o.eq(1<<13)
+            with m.Case(14): m.d.comb += self.o.eq(1<<14)
+            with m.Case(15): m.d.comb += self.o.eq(1<<15)
+            with m.Case(): m.d.comb += self.o.eq(0)
+
+    
+        return m
+
+
 class DECODER_3_8(Elaboratable):
     def __init__(self):
         self.sel = Signal(3)
@@ -65,8 +102,7 @@ class DECODER_3_8(Elaboratable):
 
         inp = [self.decoders[i].sel.eq(self.sel[i]) for i in range(3)]
 
-        # [int(e) for e in list(bin(2)[2:].zfill(3))]
-        
+        """
         oup = [
                self.o[0].eq(self.decoders[2].o[0] & self.decoders[1].o[0] & self.decoders[0].o[0]),
                self.o[1].eq(self.decoders[2].o[0] & self.decoders[1].o[0] & self.decoders[0].o[1]),
@@ -77,7 +113,7 @@ class DECODER_3_8(Elaboratable):
                self.o[6].eq(self.decoders[2].o[1] & self.decoders[1].o[1] & self.decoders[0].o[0]),
                self.o[7].eq(self.decoders[2].o[1] & self.decoders[1].o[1] & self.decoders[0].o[1])
                ]
-
+        """
         a_oup = [] 
         for j in range(8):
             bins = [int(e) for e in list(bin(j)[2:].zfill(3))]
@@ -123,11 +159,10 @@ class DECODER_N_2PN(Elaboratable):
         return m
 
 
-if __name__ == "__main__":
+def main_decoders():
     deco = DECODER_1_2()
     print(verilog.convert(deco, strip_internal_attrs=True, ports=[deco.sel, deco.o]))
 
-    from nmigen.back.pysim import *
     n_deco = 4
     deco2 = DECODER_N_2PN(n_deco)
     print(verilog.convert(deco2, strip_internal_attrs=True, ports=[deco.sel, deco.o]))
@@ -148,3 +183,5 @@ if __name__ == "__main__":
     sim.run()
 
  
+if __name__ == "__main__":
+    pass
