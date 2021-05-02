@@ -18,3 +18,5 @@ drawing.svg
 xilinx
 cntr_intel
 cntr_sync_load
+__pycache__/
+*.cf

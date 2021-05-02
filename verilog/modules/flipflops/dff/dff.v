@@ -18,4 +18,3 @@ module dff
     end
 
 endmodule
-
