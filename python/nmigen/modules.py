@@ -25,26 +25,27 @@ class REG(Elaboratable):
 
 
 class REG16(Elaboratable):
-    def __init__(self, width):
-        self.wen = Signal(16)
-        self.wdata = Signal(width)
-        self.readd1 = Signal(4)
-        self.readd2 = Signal(4)
-        self.readdata1 = Signal(width)
-        self.readdata2 = Signal(width)
-        self.qq = [Signal(width) for i in range(16)]
+    def __init__(self, bus_width=16, elements=16):
 
-        self.registers = [REG(width) for i in range(16)]
+        self.bus_width = bus_width
+        self.elements = elements
+
+        self.wen = Signal(elements)
+        self.wdata = Array([Signal(bus_width) for i in range(elements)])
+
+        self.qq = Array([Signal(bus_width) for i in range(elements)])
+
+        self.registers = [REG(bus_width) for i in range(elements)]
 
     def elaborate(self, platform):
         m = Module()
 
         m.submodules += self.registers
 
-        rr = [self.registers[i].en.eq(self.wen[i]) for i in range(16)]
-        dd = [self.registers[i].data.eq(self.wdata) for i in range(16)]
+        rr = [self.registers[i].en.eq(self.wen[i]) for i in range(self.elements)]
+        dd = [self.registers[i].data.eq(self.wdata[i]) for i in range(self.elements)]
         dd.extend(rr)
-        qqq = [self.registers[i].q.eq(self.qq[i]) for i in range(16)]
+        qqq = [self.qq[i].eq(self.registers[i].q) for i in range(self.elements)]
         dd.extend(qqq)
         m.d.comb += dd
 
@@ -130,6 +131,4 @@ if __name__ == "__main__":
 
     reg16 = REG16(16)
     print(verilog.convert(reg16, strip_internal_attrs=True, 
-                          ports=[reg16.wen, reg16.wdata, reg16.readd1, reg16.readd2]))
-
-    
+                          ports=[reg16.wen, reg16.wdata, reg16.readadd1, reg16.readadd2]))

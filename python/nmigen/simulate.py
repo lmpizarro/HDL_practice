@@ -1,13 +1,13 @@
 from nmigen.back.pysim import *
-from modules import ALU, MUX, MUX4, REG
+from modules import ALU, REG, REG16
 from nmigen.cli import main
+from nmigen import ResetSignal
+from utils.utils import print_alu
 
-if __name__ == "__main__":
+def simulate_alu():
+
     alu = ALU(width=16)
     main(alu, ports=[alu.op, alu.a, alu.b, alu.o])
-
-    def print_alu(i, j, out):
-        print(i, j, out)
 
     sim =  Simulator(alu, vcd_file = open( 'test.vcd', 'w' ) )
     def proc():
@@ -24,77 +24,39 @@ if __name__ == "__main__":
 
     print()
 
-    mux = MUX(width=16)
-
-    sim =  Simulator(mux, vcd_file = open( 'test.vcd', 'w' ) )
-    def proc():
-        for i in range( 4 ):
-            yield mux.op.eq(0)
-            yield mux.a.eq(i)
-            yield mux.b.eq(9)
-            yield Delay()
-            print_alu(i, 9, (yield mux.o))
-
-            yield mux.op.eq(1)
-            yield mux.a.eq(i)
-            yield mux.b.eq(9)
-            yield Delay()
-            print_alu(i, 9, (yield mux.o))
-
-
-    sim.add_process( proc )
-    sim.run()
-
-    mux4 = MUX4(width=16)
-    main(mux4, ports=[mux4.sel, mux4.a, mux4.b, mux4.c, mux4.d, mux4.o])
-
-    print()
-    print("....")
-    sim =  Simulator(mux4, vcd_file = open( 'test.vcd', 'w' ) )
-    def proc2():
-        for i in range( 4 ):
-            yield mux4.sel.eq(1)
-
-            yield mux4.a.eq(i)
-            yield mux4.b.eq(2)
-            yield mux4.c.eq(5)
-            yield mux4.d.eq(9)
-
-            yield Delay()
-            print_alu(i, 3, (yield mux4.o))
-
-    sim.add_process( proc2 )
-    sim.run()
-
+def simulate_reg():
     reg = REG(width=16)
     main(reg, ports=[reg.en, reg.data, reg.q])
 
     print()
-    print(".uuu...")
     sim =  Simulator(reg, vcd_file = open( 'test.vcd', 'w' ) )
     def proc2():
         yield reg.en.eq(0)
         yield reg.data.eq(9)
-
         yield Tick()
+        
+        yield reg.en.eq(1)
+        yield Tick()
+        yield Tick()
+
+        yield reg.en.eq(0)
+        yield Tick()
+
         print_alu(0, 3, (yield reg.q))
-        yield
 
         yield reg.en.eq(1)
         yield reg.data.eq(4)
 
         yield Tick()
         print_alu(0, 3, (yield reg.q))
-        yield
+        yield Delay(.25e-6)
 
-        yield reg.en.eq(1)
-        yield reg.data.eq(4)
+        yield reg.en.eq(0)
+        yield reg.data.eq(0)
 
         yield Tick()
         print_alu(0, 3, (yield reg.q))
         yield
-
-        yield reg.en.eq(1)
         yield reg.data.eq(4)
 
         yield Tick()
@@ -118,19 +80,53 @@ if __name__ == "__main__":
 
 
         yield reg.en.eq(1)
-        yield ResetInserter()
+        
         yield reg.data.eq(0)
 
         yield Tick()
         print_alu(0, 3, (yield reg.q))
         yield
-
-
-
 
 
     sim.add_clock(1e-6)
     sim.add_sync_process( proc2 )
     sim.run()
 
+
+
+if __name__ == "__main__":
+    reg16 = REG16()
+    main(reg16, ports=[reg16.wen, reg16.wdata, reg16.qq])
+
+    print()
+    sim =  Simulator(reg16, vcd_file = open( 'test.vcd', 'w' ) )
+
+    def proc2():
+        yield reg16.wen[0].eq(0)
+        yield reg16.wdata[0].eq(9)
+        yield Tick()
+
+        print('0 9', (yield reg16.qq[0]))
+        yield reg16.wen[0].eq(1)
+        
+        yield Tick()
+        yield Tick()
+        print('1 9', (yield reg16.qq[0]))
+
+        yield reg16.wen[3].eq(0)
+        yield reg16.wdata[3].eq(99)
+        yield Tick()
+
+        print((yield reg16.qq[3]))
+        yield reg16.wen[3].eq(1)
+        
+        yield Tick()
+        yield Tick()
+        print((yield reg16.qq[3]))
+        print((yield reg16.qq[0]))
+
+
+    sim.add_clock(1e-6)
+    sim.add_sync_process( proc2 )
+    sim.run()
 
