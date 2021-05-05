@@ -68,10 +68,10 @@ class Hack(Elaboratable):
         self.instruction = Signal(16)  # input
         self.dataReadRAM  = Signal(16) # input     inM
         self.dataWriteRAM = Signal(16) # output    outM
+        self.PC = Signal(16)           # output
 
         self.A = Signal(16)
         self.D = Signal(16)
-        self.PC = Signal(16)           # output
 
         self.Alu = ALU()
 
@@ -118,18 +118,24 @@ class Hack(Elaboratable):
             m.d.comb += jump_cond.eq(1)
         with m.Elif(jump_ins == 0b000):
             m.d.comb += jump_cond.eq(0)
-        with m.Elif(jump_ins == 1 & self.Alu.Z > 0):
-            m.d.comb += jump_cond.eq(1)
-        with m.Elif(jump_ins == 2 & self.Alu.Z == 0):
-            m.d.comb += jump_cond.eq(1)
-        with m.Elif(jump_ins == 3 & self.Alu.Z >= 0):
-            m.d.comb += jump_cond.eq(1)
-        with m.Elif(jump_ins == 4 & self.Alu.Z < 0):
-            m.d.comb += jump_cond.eq(1)
-        with m.Elif(jump_ins == 5 & self.Alu.Z != 0):
-            m.d.comb += jump_cond.eq(1)
-        with m.Elif(jump_ins == 6 & self.Alu.Z <= 0):
-            m.d.comb += jump_cond.eq(1)
+        with m.Elif(jump_ins == 1):
+            with m.If(self.Alu.Z > 0):
+                m.d.comb += jump_cond.eq(1)
+        with m.Elif(jump_ins == 2):
+            with m.If(self.Alu.Z == 0):
+                m.d.comb += jump_cond.eq(1)
+        with m.Elif(jump_ins == 3):
+            with m.If(self.Alu.Z >= 0):
+                m.d.comb += jump_cond.eq(1)
+        with m.Elif(jump_ins == 4):
+            with m.If(self.Alu.Z < 0):
+                m.d.comb += jump_cond.eq(1)
+        with m.Elif(jump_ins == 5):
+            with m.If(self.Alu.Z != 0):
+                m.d.comb += jump_cond.eq(1)
+        with m.Elif(jump_ins == 6):
+            with m.If(self.Alu.Z <= 0):
+                m.d.comb += jump_cond.eq(1)
         with m.Else():
             m.d.comb += jump_cond.eq(0)            
 
@@ -169,3 +175,12 @@ if __name__== "__main__":
 
     from nmigen.back import verilog
     print(verilog.convert(alu16, strip_internal_attrs=True, ports=ports))
+
+    hack = Hack()
+    ports = [hack.addressRAM,
+             hack.dataReadRAM,
+             hack.dataWriteRAM,
+             hack.PC,
+             hack.enWrtRAM,
+             hack.instruction]
+    print(verilog.convert(hack, strip_internal_attrs=True, ports=ports))
