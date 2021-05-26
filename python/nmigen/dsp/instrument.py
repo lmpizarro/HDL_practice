@@ -26,15 +26,16 @@ class Instrument(Elaboratable):
         disable = Trigger(width=self.width)
         """
         pulse->[trapezoidal]--y----------->[brl] -> out
-                                    |        |
-                                    x        en
-                                    |        |
+                    |               |        |
+                    |               x        en
+                    |               |        |
         thres-------------------->[disable]----
         """
 
         m.submodules += [trapezoidal, brl, disable]
 
-        m.d.comb += [trapezoidal.x.eq(self.pulse), 
+        m.d.comb += [trapezoidal.x.eq(self.pulse),
+                     trapezoidal.threshold.eq(self.threshold),
                      disable.th.eq(self.threshold),
                      disable.x.eq(trapezoidal.y),
                      brl.x.eq(trapezoidal.y),
@@ -70,9 +71,9 @@ if __name__ == "__main__":
     sim.add_clock(1e-6)
     signal_o = []
     def process():
-        dut.threshold.eq(1000)
         for v in dut.stimulus:
             yield Tick()
+            yield dut.threshold.eq(5)
             yield dut.pulse.eq(v)
             signal_o.append((yield dut.out))
 

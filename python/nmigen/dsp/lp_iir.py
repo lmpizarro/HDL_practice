@@ -84,6 +84,7 @@ class Trapezoidal(Elaboratable):
         self.delay = delay
         self.x = Signal(signed(width))
         self.y = Signal(signed(width), reset=0)
+        self.threshold = Signal(signed(width))
 
         weights = [-1] * self.taps
         weights.extend([0] * self.taps)
@@ -101,16 +102,21 @@ class Trapezoidal(Elaboratable):
             if i > 0:
                 m.d.sync += [self.delay_line0[i-1].eq(self.delay_line0[i])]
 
-
+        temp = Signal(signed(self.width))
         weighted_sum = sum([el*weight for el,weight in zip(self.delay_line0, self.params["weights"])])
-        m.d.comb += self.y.eq(weighted_sum>>self.delay)
+        m.d.comb += [temp.eq(weighted_sum>>self.delay)]
 
         m.d.comb += [self.delay_line0[i].eq(self.x)]
+
+        with m.If(temp > self.threshold):
+            m.d.comb += [self.y.eq(temp)]
+        with m.Else():
+            m.d.comb += [self.y.eq(0)]
 
         return m 
 
     def ports(self)->List[Signal]:
-            return [self.x, self.y]
+            return [self.x, self.y, self.threshold]
 
     def set_test_stimulus(self, sti):
         self.stimulus = sti

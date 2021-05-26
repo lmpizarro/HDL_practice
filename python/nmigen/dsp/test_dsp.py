@@ -86,9 +86,9 @@ def test_trapezoidal():
     sim.add_clock(1e-6)
     signal_o = []
     def process():
-        k = 10
         for v in dl.stimulus:
             yield Tick()
+            yield dl.threshold.eq(20)
             yield dl.x.eq(v)
             signal_o.append((yield dl.y))
 
@@ -197,4 +197,4 @@ def test_trigger():
 
 
 if __name__ == "__main__":
-    test_trigger()
+    test_trapezoidal()
