@@ -8,7 +8,7 @@ class Brl(Elaboratable):
         self.taps = int(math.pow(2, self.M)) 
         self.width = width
         self.x = Signal(signed(width))
-        self.y = Signal(signed(width))
+        self.y = Signal(signed(width), reset=0)
         self.en = Signal()
 
         weights = [1] * self.taps
@@ -61,7 +61,7 @@ class Trigger(Elaboratable):
             m.d.sync += [self.counter.eq(self.counter + 1)]
         with m.Else():
             with m.If(self.counter >10):
-                with m.If(self.counter < 200):
+                with m.If(self.counter < 15):
                     m.d.sync += [self.counter.eq(self.counter + 1)]
                 with m.Else():
                     m.d.sync += [self.counter.eq(0)]
