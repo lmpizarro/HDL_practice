@@ -4,7 +4,6 @@
 *.bin
 .vscode
 *.vcd
-python/migen/
 python/nmigen/*.v
 python/nmigen/*.vcd
 python/myhdl/

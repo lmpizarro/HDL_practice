@@ -4,6 +4,20 @@ Copyright Luis Maria Pizarro Etchegoyen
 
 References:
 
+[nmigen](https://m-labs.hk/gateware/nmigen/)
+
+[nmigen tutorial](https://github.com/RobertBaruch/nmigen-tutorial)
+
+[nmigen-examples](https://github.com/kbob/nmigen-examples)
+
+[Learning FPGA Design with nMigen](https://vivonomicon.com/2020/04/14/learning-fpga-design-with-nmigen/)
+
+[nmigen intro with dsp](https://comparch-resources.ece.gatech.edu/labs/intro/intro/)
+
+
+## projects with nmigen
+[Luna](https://github.com/greatscottgadgets/luna)
+
 [open fpga verilog tutorial](https://github.com/Obijuan/open-fpga-verilog-tutorial/wiki)
 
 [low level bits hacks](https://catonmat.net/low-level-bit-hacks)

@@ -6,7 +6,6 @@ from migen import *
 from migen.fhdl import verilog
 
 
-# A synthesizable FIR filter.
 class CompLP(Module):
     def __init__(self, Kg, wsize=16):
     

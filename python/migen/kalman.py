@@ -1,6 +1,12 @@
 import random
 import matplotlib.pyplot as plt
 
+"""
+https://www.youtube.com/watch?v=SIQJaqYVtuE&list=LL&index=3
+Special Topics - The Kalman Filter (6 of 55) A Simple Example of the Kalman Filter (Continued)
+
+"""
+
 def main_kf():
     TrueValue = 72
     EstPrev = 68

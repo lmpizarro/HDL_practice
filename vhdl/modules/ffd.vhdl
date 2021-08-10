@@ -206,10 +206,12 @@ end rtl;
 -- DEMUX_1_4_NBIT
 
 
-entity DEMUX_1_4_NBIT
+library ieee;
+use ieee.std_logic_1164.all;
+entity DEMUX_1_4_NBIT is
     generic( N: integer );
     port(
-            sel: in std_logic_vector(;
+            sel: in std_logic_vector;
             x: in std_logic_vector(0 to N-1);
             y0, y1, y2, y3: out std_logic_vector(0 to N-1)
     );
@@ -217,8 +219,8 @@ end demux_1_4_Nbit;
 
 architecture rtl of demux_1_4_Nbit is
 begin
-    y0 <= x when sel=”00” else (others => ’-’);
-    y1 <= x when sel=”01” else (others => ’-’);
-    y2 <= x when sel=”10” else (others => ’-’);
-    y3 <= x when sel=”11” else (others => ’-’);
+    y0 <= x when sel="00" else (others => '-');
+    y1 <= x when sel="01" else (others => '-');
+    y2 <= x when sel="10" else (others => '-');
+    y3 <= x when sel="11" else (others => '-');
 end rtl;
