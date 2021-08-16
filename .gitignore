@@ -4,11 +4,10 @@
 *.bin
 .vscode
 *.vcd
-
+*.npz
 *.pgm
 python/nmigen/*.v
 python/migen/*.v
-python/migen/examples/
 python/migen/tutorial/
 python/nmigen/*.vcd
 python/myhdl/
