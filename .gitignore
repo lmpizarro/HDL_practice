@@ -4,7 +4,12 @@
 *.bin
 .vscode
 *.vcd
+
+*.pgm
 python/nmigen/*.v
+python/migen/*.v
+python/migen/examples/
+python/migen/tutorial/
 python/nmigen/*.vcd
 python/myhdl/
 pwm.py
@@ -20,3 +25,4 @@ cntr_sync_load
 __pycache__/
 *.cf
 *.gtkw
+hdlEnv/

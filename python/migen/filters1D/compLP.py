@@ -11,8 +11,11 @@ class CompLP(Module):
     
         self.wsize = wsize
 
-        Kg_fp = int(Kg*2**(self.wsize-1))
-        Kg_fp_comp = int((1-Kg)*2**(self.wsize-1))
+        k_mult = 2**(self.wsize-1)
+        Kg_fp = int(Kg * k_mult)
+        Kg_fp_comp = int((1-Kg) * k_mult)
+
+        print(f'Val Abs Max {k_mult} Kg {Kg} FP Kg {Kg_fp} (1 - Kg) {(1-Kg)} FP -> {Kg_fp_comp} {self.wsize}')
 
         self.Meas = Signal((self.wsize, True))
         self.lp_o = Signal((self.wsize, True))
@@ -30,7 +33,7 @@ class CompLP(Module):
 def fir_tb(dut, frequency, inputs, outputs, est_pre):
     f = 2**(dut.wsize - 1)
     for cycle in range(100):
-        v = 0.1*sin(2*pi*frequency*cycle) + random.gauss(0, .01)
+        v = 0.1 * sin(2*pi*frequency*cycle) + random.gauss(0, .01)
         # v = .1 + random.gauss(0, .001)
         yield dut.Meas.eq(int(f*v))
         inputs.append(v)

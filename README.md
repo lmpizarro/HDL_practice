@@ -41,4 +41,8 @@ Cores
 
 [fabriziotappero](https://github.com/fabriziotappero/ip-cores)
 
-[]()
+[pyFDA](https://medium.com/analytics-vidhya/discrete-time-design-using-python-filter-design-analysis-tool-e8dd432e490e)
+
+[git pyFDA](https://github.com/chipmuenk/pyFDA/)
+
+[Christian Münker chipmuenk](https://github.com/chipmuenk)
