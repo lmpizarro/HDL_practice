@@ -6,6 +6,9 @@
 *.vcd
 *.npz
 *.pgm
+*.png
+*.xml
+*.f
 python/nmigen/*.v
 python/migen/*.v
 python/migen/tutorial/
