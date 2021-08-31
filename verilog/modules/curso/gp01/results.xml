@@ -1,6 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1630381844" />
-    <testcase name="my_second_test" classname="test_gp01" file="/home/lmpizarro/devel/project/HDL/verilog/verilog/modules/curso/gp01/test_gp01.py" lineno="14" time="0.009909629821777344" sim_time_ns="46.001" ratio_time="4642.05029121355" />
-  </testsuite>
-</testsuites>
