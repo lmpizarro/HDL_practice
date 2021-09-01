@@ -9,6 +9,7 @@
 *.png
 *.xml
 *.f
+*.pdf
 python/nmigen/*.v
 python/migen/*.v
 python/migen/tutorial/
