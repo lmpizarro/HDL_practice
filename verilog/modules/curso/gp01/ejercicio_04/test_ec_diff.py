@@ -12,7 +12,7 @@ async def generate_clock(dut):
         await Timer(1, units="ns")
 
 @cocotb.test()
-async def my_second_test(dut):
+async def test_ec_diff(dut):
     """Try accessing the design."""
 
     dut._log.info("Running test...")
@@ -35,9 +35,14 @@ async def my_second_test(dut):
 
     dut.i_x = 4
     output = []
-    for i in range(40):
+    for i in range(30):
         await FallingEdge(dut.clk)  # wait for falling edge/"negedge"
         dut.i_x = 4
-        output.append(dut.o_y.value)
+        output.append(dut.o_y.value.integer)
     
     print(output)
+
+    import matplotlib.pyplot as plt
+
+    plt.plot(output)
+    plt.show()
