@@ -34,7 +34,7 @@ module ec_diff
                 x_n_1 <= 0;
                 x_n_2 <= 0;
                 x_n_3 <= 0;
-                
+
             end else begin
 
                 y_n_1 <= o_y;
@@ -48,7 +48,6 @@ module ec_diff
         end
 
         assign o_y = i_x - x_n_1 + x_n_2 + x_n_3 + y_n_1_half + y_n_2_quarter; 
-        // assign y_n_0 = o_y;
 
 // the "macro" to dump signals
 `ifdef COCOTB_SIM
