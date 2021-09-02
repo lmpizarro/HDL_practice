@@ -5,7 +5,7 @@ from cocotb.triggers import FallingEdge
 async def generate_clock(dut):
     """Generate clock pulses."""
 
-    for cycle in range(40):
+    for cycle in range(400):
         dut.clock <= 0
         await Timer(1, units="ns")
         dut.clock <= 1
