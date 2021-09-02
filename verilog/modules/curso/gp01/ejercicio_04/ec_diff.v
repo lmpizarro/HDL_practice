@@ -34,9 +34,9 @@ module ec_diff
                 x_n_1 <= 0;
                 x_n_2 <= 0;
                 x_n_3 <= 0;
+                
             end else begin
 
-                // y_n_0 <= o_y;
                 y_n_1 <= o_y;
                 y_n_2 <= y_n_1;
 
