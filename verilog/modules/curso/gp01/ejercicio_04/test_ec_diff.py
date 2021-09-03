@@ -33,11 +33,11 @@ async def test_ec_diff(dut):
 
     dut._log.info(f"my_signal_1 is  {dut.o_y.value}")
 
-    dut.i_x = 4
+    dut.i_x = 10000
     output = []
     for i in range(30):
         await FallingEdge(dut.clk)  # wait for falling edge/"negedge"
-        dut.i_x = 4
+        dut.i_x = 0
         output.append(dut.o_y.value.integer)
     
     print(output)
