@@ -8,11 +8,11 @@ module add_2c
         ov
     );
 
-    input [N-1: 0] op1;
-    input [N-1: 0] op2;
+    input signed [N-1: 0] op1;
+    input signed [N-1: 0] op2;
 
-    reg [N-1: 0] MIN = {1'b1,{N-1{1'b0}}};
-    reg [N-1: 0] MAX = {1'b0,{N-1{1'b1}}};
+    reg signed [N-1: 0] MIN = {1'b1,{N-1{1'b0}}};
+    reg signed [N-1: 0] MAX = {1'b0,{N-1{1'b1}}};
 
     output reg [N-1: 0] out;
     output reg co, ov, neg;
@@ -26,9 +26,5 @@ module add_2c
             if (neg) out = MIN;
             else  out = MAX;
         end
-          
     end
-
-
-
 endmodule
