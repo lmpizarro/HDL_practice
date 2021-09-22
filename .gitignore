@@ -1,3 +1,5 @@
+*.csv
+verilog/modules/curso/lab02/iirSim/tool/
 .ipynb_checkpoints/
 .DS_Store
 .DS_Store/
