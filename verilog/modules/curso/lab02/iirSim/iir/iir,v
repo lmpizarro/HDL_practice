@@ -1,0 +1,31 @@
+module iir 
+
+    #(
+ 
+        /* coefficients */
+        parameter   NB_COEF = 16,
+        parameter     NB_IO = 9,
+        parameter    NBF_IO = 8,
+        parameter  NBF_COEF = 14,
+        parameter signed b0 = 16'b0000_0001_0101_0000,
+        parameter signed b1 = 16'b0000_0010_1010_0000,
+        parameter signed b2 = 16'b0000_0001_0101_0000,
+        parameter signed a0 = 16'b0100_0000_0000_0000,
+        parameter signed a1 = 16'b1001_1000_0110_1010,
+        parameter signed a2 = 16'b0010_1101_0111_1010
+    )
+
+    (
+        input 		 i_clk,
+        input 		 i_rst,
+        input signed  [NB_IO - 1:0] 	i_data,
+        output signed [NB_IO - 1:0]  o_data
+    );
+
+    // ! vn = xn - a1 * vn_1 - a2 * vn_2
+    // ! yn = b0 * vn + b1 * vn_1 + b2 * vn_2
+    /* vn[6,8]
+
+    */
+
+endmodule 

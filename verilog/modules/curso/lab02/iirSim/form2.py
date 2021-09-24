@@ -14,8 +14,8 @@ import pandas as pd
 refs:
     https://www.dsprelated.com/freebooks/filters/Four_Direct_Forms.html
     
-    vn = xn - a1vn_1 -a2vn_2
-    yn = b0vn + b1vn_1 + b2 * vn_2
+    vn = xn - a1 * vn_1 - a2 * vn_2
+    yn = b0 * vn + b1 * vn_1 + b2 * vn_2
 
     https://www.controlpaths.com/2021/04/19/implementing-a-digital-biquad-filter-in-verilog/
 
@@ -153,7 +153,7 @@ if __name__ == '__main__':
 
     NB = 16
     NBF = NB - 2
-    iir2 = IIR2(sos, NB, NBF, scaler=NBF, csv_file_path=csv_file_path)
+    iir2 = IIR2(sos, NB, NBF, scaler=NBF - 6, csv_file_path=csv_file_path)
     iir2.plot_freq_resp()
 
     df = compare_resp(sos, iir2=iir2)
