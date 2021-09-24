@@ -1,5 +1,7 @@
 from sys import path
+from numpy.lib.function_base import append
 from numpy.ma import power
+from numpy.ma.core import asarray
 from scipy import signal
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,8 +13,12 @@ import pandas as pd
 '''
 refs:
     https://www.dsprelated.com/freebooks/filters/Four_Direct_Forms.html
+    
     vn = xn - a1vn_1 -a2vn_2
     yn = b0vn + b1vn_1 + b2 * vn_2
+
+    https://www.controlpaths.com/2021/04/19/implementing-a-digital-biquad-filter-in-verilog/
+
 '''
 
 class IIR2:
@@ -23,45 +29,56 @@ class IIR2:
         self.csv_file_path = csv_file_path
         self.sos = sos
         self.scaler = scaler
+        self.length_coeff = len(sos[0])
+
+        self.sos_to_fix_sos()        
+
+
 
     @staticmethod
     def pad_bin(int_value, pad):
-        spl = bin(int_value).split('b')
+        splited = bin(int_value).split('b')
 
-        return f'0b{spl[1].zfill(pad)}'
+        return f'0b{splited[1].zfill(pad)}'
 
+    def sos_to_fix_sos(self):
+        sos_array = np.asarray(self.sos[0])
+        self.fix_sos_coeff = arrayFixedInt(self.NB, self.NBF, sos_array, 
+                                     signedMode='S', roundMode='round', 
+                                     saturateMode='wrap')
+    
 
-    def fix_sos(self, sos):
-
-        diffs = []
-        for c in sos[0]:
-
-            fixer = DeFixedInt(self.NB, self.NBF, 'S', 'round', 'saturate') 
-            fixer.value = c
-            diffs.append(c - fixer.fValue)
+    def binary_coeff(self):
+        bin_coeffs = []
+        for ptr in range(len(self.sos[0])):
+            binary_val = IIR2.pad_bin(self.fix_sos_coeff[ptr].intvalue, self.fix_sos_coeff[0].width)
         
-            padded = IIR2.pad_bin(fixer.intvalue, fixer.width)
 
-            print(c, fixer.fValue,  fixer.intvalue, padded)
+            bin_coeffs.append(binary_val)
 
-        err = np.sqrt(np.power(np.asarray(diffs), 2).sum())
+        return bin_coeffs
 
-        print(f'\nerror {err}\n')
+    def float_coeff(self):
+        float_coeff = []
+        for ptr in range(len(self.sos[0])):
+        
+
+            float_coeff.append(self.fix_sos_coeff[ptr].fValue)
+        return float_coeff
 
 
-        sos_array = np.asarray(sos[0])
-        fix_sos = arrayFixedInt(self.NB, self.NBF, sos_array, signedMode='S', roundMode='round', saturateMode='wrap')
 
-        for ptr in range(len(sos_array)):
-            print(sos_array[ptr],'\t',fix_sos[ptr].fValue, IIR2.pad_bin(fix_sos[ptr].intvalue, fixer.width))
- 
-        b0 = fix_sos[0].fValue
-        b1 = fix_sos[1].fValue
-        b2 = fix_sos[2].fValue
+    def fix_sos(self):
 
-        a0 = fix_sos[3].fValue
-        a1 = fix_sos[4].fValue
-        a2 = fix_sos[5].fValue
+        self.sos_to_fix_sos()
+
+        b0 = self.fix_sos_coeff[0].fValue
+        b1 = self.fix_sos_coeff[1].fValue
+        b2 = self.fix_sos_coeff[2].fValue
+
+        a0 = self.fix_sos_coeff[3].fValue
+        a1 = self.fix_sos_coeff[4].fValue
+        a2 = self.fix_sos_coeff[5].fValue
 
         return [b0, b1, b2, a0, a1, a2]
 
@@ -123,15 +140,13 @@ def compare_resp(sos, iir2: IIR2):
     
     x = [1]*100 + [-1]*100 + [1]*100 + [0]*100 
 
-    sos_fix = [iir2.fix_sos(sos)] 
+    sos_fix = [iir2.fix_sos()]
+
     filter_values = iir2.sos_form_ii_transposed(sos_fix, x, y)
  
     ry = [vals[len(vals) - 1]  for i, vals in enumerate(filter_values) if i!=0]
     [vals.append(y[i-1])  if i !=0 else vals.append('yfl') for i, vals in enumerate(filter_values)]
 
-    print(filter_values)
-
-    # exit(0)
 
     df = pd.DataFrame(data=filter_values[1:], columns = filter_values[0])
     
@@ -147,7 +162,7 @@ def compare_resp(sos, iir2: IIR2):
         plt.show()
         
 
-    return df
+    return df, sos_fix
 
 
 if __name__ == '__main__':
@@ -157,20 +172,21 @@ if __name__ == '__main__':
     csv_file = 'values.csv'
      
     csv_file_path = os.path.join(folder, csv_file)
-    NB = 24
+    NB = 16
     NBF = NB - 2
-    iir2 = IIR2(sos, NB, NBF, scaler=NBF-4, csv_file_path=csv_file_path)
-    iir2.fix_sos(sos)
+    iir2 = IIR2(sos, NB, NBF, scaler=NBF, csv_file_path=csv_file_path)
+    iir2.fix_sos()
 
-    df = compare_resp(sos, iir2=iir2)
-
-    print(df.keys())
+    df, sos_fix_fl = compare_resp(sos, iir2=iir2)
     
     df['yfp_yfl'] = df.yfp - df.yfl
 
-
     df.to_csv(csv_file_path)
 
-    print(df.describe())
+    q_f = np.log(df['yfl'].dot(df['yfp'])/df['yfp_yfl'].dot(df['yfp_yfl']))
+    print(f'q_f: {q_f}')
 
-    print(np.log(df['yfl'].dot(df['yfp'])/df['yfp_yfl'].dot(df['yfp_yfl'])))
+
+    print(iir2.binary_coeff()) 
+    print(iir2.float_coeff())
+    print(sos[0])
