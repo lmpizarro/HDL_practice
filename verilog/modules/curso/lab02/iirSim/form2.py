@@ -33,8 +33,6 @@ class IIR2:
 
         self.sos_to_fix_sos()        
 
-
-
     @staticmethod
     def pad_bin(int_value, pad):
         splited = bin(int_value).split('b')
@@ -47,12 +45,10 @@ class IIR2:
                                      signedMode='S', roundMode='round', 
                                      saturateMode='wrap')
     
-
     def binary_coeff(self):
         bin_coeffs = []
         for ptr in range(len(self.sos[0])):
             binary_val = IIR2.pad_bin(self.fix_sos_coeff[ptr].intvalue, self.fix_sos_coeff[0].width)
-        
 
             bin_coeffs.append(binary_val)
 
@@ -62,25 +58,16 @@ class IIR2:
         float_coeff = []
         for ptr in range(len(self.sos[0])):
         
-
             float_coeff.append(self.fix_sos_coeff[ptr].fValue)
+
         return float_coeff
-
-
 
     def fix_sos(self):
 
         self.sos_to_fix_sos()
 
-        b0 = self.fix_sos_coeff[0].fValue
-        b1 = self.fix_sos_coeff[1].fValue
-        b2 = self.fix_sos_coeff[2].fValue
-
-        a0 = self.fix_sos_coeff[3].fValue
-        a1 = self.fix_sos_coeff[4].fValue
-        a2 = self.fix_sos_coeff[5].fValue
-
-        return [b0, b1, b2, a0, a1, a2]
+        # [b0, b1, b2, a0, a1, a2]
+        return [c.fValue for c in self.fix_sos_coeff]
 
     @staticmethod
     def scale(x, bits=6):
@@ -127,42 +114,34 @@ class IIR2:
 
         return filter_values
 
+    def plot_freq_resp(self):
+        w, h = signal.sosfreqz(iir2.sos, worN=8000)
+        w_fix, h_fix = signal.sosfreqz([iir2.fix_sos()], worN=8000)
+        plt.plot(w/np.pi, np.abs(h))
+        plt.plot(w_fix/np.pi, np.abs(h_fix))
+        plt.show()
 
-def compare_resp(sos, iir2: IIR2):
-    
 
-    ploted = True
+def compare_resp(sos, iir2: IIR2, ploted = True):
 
     x = [1]*100 + [-1]*100 + [1]*100 + [0]*100 
     x = np.asarray(x)
     y = signal.sosfilt(sos, x)
 
-    
     x = [1]*100 + [-1]*100 + [1]*100 + [0]*100 
-
-    sos_fix = [iir2.fix_sos()]
-
-    filter_values = iir2.sos_form_ii_transposed(sos_fix, x, y)
+    filter_values = iir2.sos_form_ii_transposed([iir2.fix_sos()], x, y)
  
     ry = [vals[len(vals) - 1]  for i, vals in enumerate(filter_values) if i!=0]
     [vals.append(y[i-1])  if i !=0 else vals.append('yfl') for i, vals in enumerate(filter_values)]
 
-
     df = pd.DataFrame(data=filter_values[1:], columns = filter_values[0])
     
-    w, h = signal.sosfreqz(sos, worN=8000)
-    w_fix, h_fix = signal.sosfreqz(sos_fix, worN=8000)
-
     if ploted:
-        plt.plot(w/np.pi, np.abs(h))
-        plt.plot(w_fix/np.pi, np.abs(h_fix))
-        plt.show()
         plt.plot(y)
         plt.plot(ry)
         plt.show()
         
-
-    return df, sos_fix
+    return df
 
 
 if __name__ == '__main__':
@@ -170,22 +149,23 @@ if __name__ == '__main__':
     
     folder = '/home/lmpizarro/devel/project/HDL/verilog/verilog/modules/curso/lab02/iirSim'
     csv_file = 'values.csv'
-     
     csv_file_path = os.path.join(folder, csv_file)
+
     NB = 16
     NBF = NB - 2
     iir2 = IIR2(sos, NB, NBF, scaler=NBF, csv_file_path=csv_file_path)
-    iir2.fix_sos()
+    iir2.plot_freq_resp()
 
-    df, sos_fix_fl = compare_resp(sos, iir2=iir2)
+    df = compare_resp(sos, iir2=iir2)
     
     df['yfp_yfl'] = df.yfp - df.yfl
 
-    df.to_csv(csv_file_path)
 
     q_f = np.log(df['yfl'].dot(df['yfp'])/df['yfp_yfl'].dot(df['yfp_yfl']))
     print(f'q_f: {q_f}')
 
+
+    df.to_csv(csv_file_path)
 
     print(iir2.binary_coeff()) 
     print(iir2.float_coeff())
