@@ -89,7 +89,7 @@ class IIR2:
 
 
         filter_values = []
-        filter_values.append('ex2,ex1,ex0,xp0,ey2,ey1,ey0,ey0,yfp'.split(','))   
+        filter_values.append('ex2,ex1,ex0,xp0,ey2,ey1,ey0,yfp'.split(','))   
 
         for i, x0 in enumerate(x):
 
@@ -108,7 +108,7 @@ class IIR2:
             x2 = x1
             x1 = xp0
 
-            line_val = f'{ex2:.5e}, {ex1:.5e}, {ex0:.5e}, {xp0:.5e}, {ey2:.5e}, {ey1:.5e}, {ey0:.5e}, {ey0:.5e}, {y0:.5e}'   
+            line_val = f'{ex2:.5e}, {ex1:.5e}, {ex0:.5e}, {xp0:.5e}, {ey2:.5e}, {ey1:.5e}, {ey0:.5e}, {y0:.5e}'   
             filter_values.append([float(strval) for strval in line_val.split(',')])
             
 
@@ -153,7 +153,7 @@ if __name__ == '__main__':
 
     NB = 16
     NBF = NB - 2
-    iir2 = IIR2(sos, NB, NBF, scaler=NBF - 6, csv_file_path=csv_file_path)
+    iir2 = IIR2(sos, NB, NBF, scaler=NBF - 4, csv_file_path=csv_file_path)
     iir2.plot_freq_resp()
 
     df = compare_resp(sos, iir2=iir2)
@@ -170,3 +170,6 @@ if __name__ == '__main__':
     print(iir2.binary_coeff()) 
     print(iir2.float_coeff())
     print(sos[0])
+
+    print(df[['ey0', 'ey1', 'ey2', 'yfp']].describe())
+    print(df[['ex0', 'ex1', 'ex2', 'xp0']].describe())
