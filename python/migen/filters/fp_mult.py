@@ -82,6 +82,27 @@ def multiplier_tb(dut, inputs, outputs):
         outputs.append(((yield dut.AAux), (yield dut.BAux)))
         yield
 
+def create_ints(aa=1.12, bb=0.22, NBIA=5, NBFA=13, NBIB=3, NBFB=9, NBIO=4, NBFO=12):
+    float_res = aa * bb
+
+    res_fp = FixedPoint(aa, signed=1, m=NBIA, n=NBFA)
+    bb_fp = FixedPoint(bb, signed=1, m=NBIB, n=NBFB)
+
+    res_mult = FixedPoint(float_res, signed=1, m=NBIO, n=NBFO)
+     
+    AA_int = (int(bin(res_fp).split('b')[1],2))
+    BB_int = int(bin(bb_fp).split('b')[1],2)
+    res_mult_int = int(bin(res_mult).split('b')[1],2)
+
+    print(AA_int * BB_int, float_res)
+    print(res_mult_int, len(bin(res_mult_int).split('b')[1]), bin(res_mult_int))
+
+    res_fp = FixedPoint(bin(res_mult_int), 1, NBIO, NBFO, str_base=2)
+
+    print('res_fp', float(res_fp), bin(res_mult_int))
+
+    return AA_int, BB_int
+
 if __name__ == '__main__':
     dut = MultiplierFP(10)
 
@@ -91,7 +112,8 @@ if __name__ == '__main__':
     AA = int("0b001011011101110111",2) # 5 13
     BB = int("0b110101010101",2)       # 113 90000
 
-    inputs = [(22, 44), (AA, BB), (22, 43)]
+    AA1, BB1 = create_ints()
+    inputs = [(22, 44), (AA, BB), (AA1, BB1)]
 
     outs = []
     tb = multiplier_tb(dut=dut, inputs=inputs, outputs=outs)
