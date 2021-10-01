@@ -28,7 +28,7 @@ class MultiplierFP(Module):
         self.NZeroF = self.NBFA-self.NBFB if self.NBFA >= self.NBFB else self.NBFB - self.NBFA
         self.NSIGN = self.NBIA-self.NBIB if self.NBIA >= self.NBIB else self.NBIB - self.NBIA
 
-        self.MAX_OUT = int(math.pow(2, self.NBO-1) - 1)
+        self.MAX_OUT = int(math.pow(2, self.NBFAux + self.NBO -1) - 1)
         self.MIN_OUT = -(self.MAX_OUT) + 1
         
 
@@ -48,7 +48,6 @@ class MultiplierFP(Module):
         self.Y = Signal((self.NBO, True), reset=0)
 
         self.comb += self.ZeroF.eq(0)
-        self.comb += self.C.eq(self.AAux * self.BAux)
 
         if self.NBFA > self.NBFB:
             self.comb += self.BAux.eq(Cat(self.ZeroF, self.B))
@@ -67,8 +66,11 @@ class MultiplierFP(Module):
             self.comb += self.SIGN.eq(Replicate(self.A[self.NBA-1], self.NSIGN))
             self.comb += self.AAux[self.NBFAux+self.NBIA:].eq(self.SIGN)
 
+        self.comb += self.C.eq(self.AAux * self.BAux)
         self.comb += If(self.C > self.MAX_OUT, self.Y.eq(self.MAX_OUT)).\
-                     Elif(self.C < self.MIN_OUT, self.Y.eq(self.MIN_OUT))
+                     Elif(self.C < self.MIN_OUT, self.Y.eq(self.MIN_OUT)).\
+                     Else(self.Y.eq(self.C[2*self.NBFAux - self.NBFO:2*self.NBAux-2*self.NBIAux + self.NBIO]))
+
         
         
 
@@ -79,27 +81,39 @@ def multiplier_tb(dut, inputs, outputs):
         yield dut.B.eq(int(v[1]))
         
         
-        outputs.append(((yield dut.AAux), (yield dut.BAux)))
+        outputs.append(((yield dut.AAux), 
+                        (yield dut.BAux), 
+                        (yield dut.A), 
+                        (yield dut.B),
+                        (yield dut.C),
+                        (yield dut.Y),
+                        
+                        ))
         yield
 
 def create_ints(aa=1.12, bb=0.22, NBIA=5, NBFA=13, NBIB=3, NBFB=9, NBIO=4, NBFO=12):
     float_res = aa * bb
 
-    res_fp = FixedPoint(aa, signed=1, m=NBIA, n=NBFA)
+    aa_fp = FixedPoint(aa, signed=1, m=NBIA, n=NBFA)
     bb_fp = FixedPoint(bb, signed=1, m=NBIB, n=NBFB)
-
-    res_mult = FixedPoint(float_res, signed=1, m=NBIO, n=NBFO)
+    cc_fp = FixedPoint(float_res, signed=1, m=2*max(NBIA, NBIB), n=2*max(NBFA, NBFB))
+    
+    res_mult_fp = FixedPoint(float_res, signed=1, m=NBIO, n=NBFO, rounding='convergent')
      
-    AA_int = (int(bin(res_fp).split('b')[1],2))
+    AA_int = (int(bin(aa_fp).split('b')[1],2))
     BB_int = int(bin(bb_fp).split('b')[1],2)
-    res_mult_int = int(bin(res_mult).split('b')[1],2)
+    res_mult_int = int(bin(res_mult_fp).split('b')[1],2)
+    CC_int = int(bin(cc_fp).split('b')[1],2)
 
-    print(AA_int * BB_int, float_res)
-    print(res_mult_int, len(bin(res_mult_int).split('b')[1]), bin(res_mult_int))
+    
+    print('AA ', AA_int, len(bin(AA_int).split('b')[1]), bin(AA_int), aa)
+    print('BB ', BB_int, len(bin(BB_int).split('b')[1]), bin(BB_int), bb)
+    print('res ', res_mult_int, len(bin(res_mult_int).split('b')[1]), bin(res_mult_int), float_res)
 
-    res_fp = FixedPoint(bin(res_mult_int), 1, NBIO, NBFO, str_base=2)
+    aa_fp = FixedPoint(bin(res_mult_int), 1, NBIO, NBFO, str_base=2)
+    aa_fp = FixedPoint(bin(916), 1, NBIO, NBFO, str_base=2)
 
-    print('res_fp', float(res_fp), bin(res_mult_int))
+    print('cc_fp', float(cc_fp), bin(cc_fp), float(aa_fp), float_res)
 
     return AA_int, BB_int
 
@@ -112,11 +126,12 @@ if __name__ == '__main__':
     AA = int("0b001011011101110111",2) # 5 13
     BB = int("0b110101010101",2)       # 113 90000
 
-    AA1, BB1 = create_ints()
-    inputs = [(22, 44), (AA, BB), (AA1, BB1)]
+    AA1, BB1 = create_ints(aa=0.2, bb=1.12)
+    inputs = [(22, 44), (AA, BB), (AA1, BB1), (0,0), (0,0)]
 
     outs = []
     tb = multiplier_tb(dut=dut, inputs=inputs, outputs=outs)
     run_simulation(dut, tb, vcd_name='sim.vcd')
 
-    print(outs)
+    for o in outs:
+        print(o)
