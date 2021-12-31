@@ -10,7 +10,7 @@
 //! - **i_enable_srrc** controls the enable (1) of the filters. The value (0) stops the systems without change of the current state of the filters.
 //! - **NOTE** COMMENT PORTS AND UNCOMMENT SIGNALS TO IMPLEMENT IN FPGA
 
-`include "/home/apola/projects/ddaUnit3/rtlB/include/artyc_include.v"
+`include "/home/lmpizarro/devel/project/HDL/verilog/curso-pola/ddaUnit3/rtlB/include/artyc_include.v"
 
 module tb_top_phy_all();
 
@@ -36,20 +36,24 @@ module tb_top_phy_all();
    //! Execute signals  
    initial 
       begin: signals
+         $monitor ("%g\t %b", $time, clock);
+         $dumpfile("top_phy_all.lxt");
+         $dumpvars(0, tb_top_phy_all);
+         
          i_prbs_enable = 1'b0;
          i_enable_srrc = 1'b0;
          i_soft_reset  = 1'b0;
          clock         = 1'b0;
          i_ram_run_from_micro = 1'b0;
          i_ram_read_from_counter = 1'b0;
-         #1000 i_soft_reset  = 1'b1;
-         #1000 i_prbs_enable = 1'b1;
-         #1000 i_enable_srrc = 1'b1;
+         #10 i_soft_reset  = 1'b1;
+         #10 i_prbs_enable = 1'b1;
+         #10 i_enable_srrc = 1'b1;
          #100000 i_ram_run_from_micro = 1'b1;
          #100000 i_ram_run_from_micro = 1'b0;
-         #1000 i_ram_run_from_micro = 1'b1;
-         i_ram_read_from_counter = 1'b1;
-         #10000 $finish;
+         #10 i_ram_run_from_micro = 1'b1;
+         #10 i_ram_read_from_counter = 1'b1;
+         #100 $finish;
       end
 
    //! Clock reference
@@ -76,8 +80,7 @@ module tb_top_phy_all();
    assign o_data_from_ram_Q = o_data_from_ram[NB_DATA_RAM_LOG*2 -1 -: NB_DATA_RAM_LOG];
    
    //! TopLevel Instance
-   top_phy_all
-     tb_top_phy_all(
+   top_phy_all tb_top_phy_all(
                    .o_data_from_ram         (o_data_from_ram),
                    .o_full_from_ram         (o_full_from_ram),
                    .i_prbs_enable           (i_prbs_enable),

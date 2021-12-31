@@ -20,13 +20,13 @@ module gp01
 
     output [5: 0] o_overflow;
     output [5: 0] o_data;
-    output reg [5: 0] oo_data;
+    reg [5: 0] oo_data;
 
-    output reg [3:0] i_mux_2;
-    output reg [3:0] i_mux_0;
-    output reg [3:0] i_mux_1;
-    output reg [5:0] o_mux;
-    output reg [6:0] o_sum;
+    reg [3:0] i_mux_2;
+    reg [3:0] i_mux_0;
+    reg [3:0] i_mux_1;
+    reg [5:0] o_mux;
+    reg [6:0] o_sum;
 
     always @(i_data1) begin
         i_mux_2 = {1'b0, i_data1};

@@ -7,11 +7,21 @@ from migen.fhdl import verilog
 
 
 class IMmemory(Module):
-    
-    def __init__(self, width, depth):
-        self.wsize = width
+     
+    def __init__(self, wsize, depth, init=None):
+        self.wsize = wsize
 
-        self.specials.mem = Memory(width=width, depth=depth, init=[0 for i in range(depth)], name='IMemory')
+        if init == None:
+            init = [0 for i in range(depth)]
+        elif len(init[0])> 1:
+            temp = []
+            for line in init:
+                for p in line:
+                    temp.append(p)
+            depth = len(temp)
+            init = temp
+
+        self.specials.mem = Memory(width=wsize, depth=depth, init=init, name='IMemory')
         self.wr_port = self.mem.get_port(write_capable=True, mode=WRITE_FIRST)
         self.rd_port = self.mem.get_port(has_re=True)
         self.specials += self.wr_port, self.rd_port
@@ -84,18 +94,17 @@ if __name__ == '__main__':
     
     lines = 4
     p_lines = 7 
-    mim = [[(j+1)*10 + i + 1 for i in range(p_lines)] for j in range(lines)]
+    # mim = [[(j+1)*10 + i + 1 for i in range(p_lines)] for j in range(lines)]
     mim = [[i for i in range(p_lines)] for j in range(lines)]
     
     
-    dut = IMmemory(width=8, depth=60)
+    dut = IMmemory(wsize=8, depth=(len(mim) + 1), init=mim)
 
     if  gen_v:
         func = mem_tb(dut, mim, None, None)
         run_simulation(dut, func, vcd_name='sum.vcd')    
 
     else:
-
         verilog = verilog.convert(dut, dut.ios)
         with open('top.v', 'w') as fp:
             fp.write(str(verilog))

@@ -63,7 +63,7 @@ module tx_srrc
    ///////////////////////////////////////////
    // Filter
    ///////////////////////////////////////////
-   `include "tx_srrc_coef.v"
+   `include "/home/lmpizarro/devel/project/HDL/verilog/curso-pola/ddaUnit3/rtlB/srrc/tx_srrc_coef.v"
 
    //! Coeffs vector to Coeffs Matrix
    generate

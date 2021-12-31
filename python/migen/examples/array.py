@@ -1,4 +1,4 @@
-from migen import *
+from migen import Module, Signal, Array,If,Instance
 from migen.fhdl import verilog
 
 

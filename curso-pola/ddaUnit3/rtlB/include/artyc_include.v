@@ -9,9 +9,8 @@
 // MEMORY RAM
 ///////////////////////////////////////////
 `define NB_DATA_RAM_LOG     16
-`define NB_ADDR_RAM_LOG     10
-`define INIT_FILE           "/home/apola/projects/ddaUnit3/rtlB/debug/ram_init16.txt"
-
+`define NB_ADDR_RAM_LOG     15
+`define INIT_FILE           "/home/lmpizarro/devel/project/HDL/verilog/curso-pola/ddaUnit3/rtlB/debug/ram_init16.txt"
 ///////////////////////////////////////////
 // PRBS
 ///////////////////////////////////////////

@@ -1,5 +1,5 @@
 module dffEn 
-    # (parameter N = 1)
+    # (parameter N = 8)
     ( 
         d,
         rst,
@@ -14,13 +14,13 @@ module dffEn
 
     always @(posedge clk) 
     begin
-        if (rst) 
-        begin
-            out  <= 0;
-        end else if (en) 
-        begin
-            out <= d;
+        if (rst) out  <= 0; 
+        else begin
+            if (en) out <= d;
+            else out <= out;       
         end
+        
+
     end
 
 endmodule

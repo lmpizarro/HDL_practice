@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     if not gen_v:
         func = tb(dut, 10000)
-        run_simulation(dut, func, vcd_name='sum.vcd')    
+        run_simulation(dut, func, vcd_name='clk_div.vcd')    
     else:
     
         verilog = verilog.convert(dut)

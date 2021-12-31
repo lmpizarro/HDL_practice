@@ -5,6 +5,8 @@
 //! @brief Transmitter filter 
 //! - Top level of BRAM block
 
+
+`include "/home/lmpizarro/devel/project/HDL/verilog/curso-pola/ddaUnit3/rtlB/include/artyc_include.v"
 module ram_save
   #(
 	  parameter NB_ADDR   = `NB_ADDR_RAM_LOG, //! NB of address for LOG

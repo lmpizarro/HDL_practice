@@ -27,5 +27,5 @@ class Example(Module):
         self.al = myfsm.after_leaving("FOO")
 
 if __name__ == "__main__":
-    example = Example()
-    print(verilog.convert(example, {example.s, example.counter, example.be, example.ae, example.bl, example.al}))
+    dut = Example()
+    verilog.convert(dut).write("my_design.v")

@@ -61,6 +61,15 @@ class IIR2:
             float_coeff.append(self.fix_sos_coeff[ptr].fValue)
 
         return float_coeff
+    
+    def int_coeff(self) -> list:
+        int_coeff = []
+        for ptr in range(len(self.sos[0])):
+            
+            int_coeff.append(self.fix_sos_coeff[ptr].value)
+
+        return int_coeff
+    
 
     def fix_sos(self):
 
@@ -169,6 +178,7 @@ if __name__ == '__main__':
 
     print(iir2.binary_coeff()) 
     print(iir2.float_coeff())
+    print(iir2.int_coeff())
     print(sos[0])
 
     print(df[['ey0', 'ey1', 'ey2', 'yfp']].describe())

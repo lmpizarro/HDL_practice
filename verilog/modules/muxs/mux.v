@@ -12,7 +12,7 @@ module mux
 
     output reg out;
 
-    always @(a, b) begin
+    always @(a, b, s) begin
 
         out = a & s | b & ~s; 
     

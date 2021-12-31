@@ -13,9 +13,9 @@ module pwm
 
     parameter MAX_VAL = $pow(2, N) - 1;
 
-    initial begin
-        $display("%f", MAX_VAL);
-    end
+    // initial begin
+    //     $display("%f", MAX_VAL);
+    // end
     
     input clk_in;
     output reg pwm_out;
@@ -33,7 +33,7 @@ module pwm
 
 
     // loads data_pwm with pwm_in
-    always @(negedge wr_data, ce) begin
+    always @(posedge clk_in) begin
         if (ce)
 	    data_pwm <= pwm_in;
     end

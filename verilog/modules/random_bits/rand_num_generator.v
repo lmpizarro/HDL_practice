@@ -9,7 +9,7 @@
 
 module rand_num_generator
     #(
-        parameter N = 3
+        parameter N = 9
     )
 
     (

@@ -25,7 +25,7 @@ module ec_diff
         assign y_n_1_half = {1'b0, y_n_1[N-1:1]};
         assign y_n_2_quarter = {2'b00, y_n_2[N-1:2]};
 
-        always @(posedge clk or i_rst) begin
+        always @(posedge clk or negedge i_rst) begin
             if (i_rst) begin
                 y_n_1 <= 0;
                 y_n_2 <= 0;
