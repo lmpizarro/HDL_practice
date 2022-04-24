@@ -69,7 +69,7 @@ inpp = []
 outp = []
 
 def dly_tb(dut: DlyMem):
-    plot_it = False
+    plot_it = True
     accm = 0
     for cycle in range(100):
         width = 16
@@ -121,17 +121,19 @@ def dly_tb(dut: DlyMem):
 
     
     if plot_it:
-        plt.plot(inpp)
+        plt.plot(inpp, '.')
         plt.plot(outp)
         plt.show()
 
 
 if __name__ == "__main__":
-    dut = DlyMem(delay=10)
-    
-    verilog.convert(dut, dut.ios).write("my_design.v")
+    convert = False
 
-    #tb = dly_tb(dut)
-    #run_simulation(dut, tb, vcd_name="sum.vcd")
+    dut = DlyMem(delay=10)
+    if convert:
+        verilog.convert(dut, dut.ios).write("my_design.v")
+    else:
+        tb = dly_tb(dut)
+        run_simulation(dut, tb, vcd_name="sum.vcd")
 
     

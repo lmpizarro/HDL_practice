@@ -141,7 +141,7 @@ def test_dly():
 
 
 def test_diff():
-    convert = True
+    convert = False
     dut = DiffDelay(width=16)
     if convert:
         verilog.convert(dut, dut.ios).write("my_design.v")
