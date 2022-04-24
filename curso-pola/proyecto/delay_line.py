@@ -34,6 +34,8 @@ class Substractor(Module):
         max = int(math.pow(2, width - 1) - 1)
         min = int(-math.pow(2, width - 1))
 
+        print(f'Substractor width {width} max {max} min {min}')
+        
         self.xor_sign = Signal()
         self.xor_signB_signY = Signal()
         self.overflow = Signal()
@@ -44,7 +46,11 @@ class Substractor(Module):
         self.YY = Signal((width, True))
         self.Y = Signal((width, True))
 
-        self.ios = {self.A, self.B, self.Y, self.YY, self.overflow}
+        self.ios = {self.A, 
+                    self.B, 
+                    self.Y, 
+                    self.YY, 
+                    self.overflow}
 
         self.comb += self.YY.eq(self.A + (-self.B))
 
@@ -52,7 +58,10 @@ class Substractor(Module):
         self.comb += self.xor_signB_signY.eq(self.B[width-1] == self.YY[width-1])
         self.comb += self.overflow.eq(~self.xor_sign & self.xor_signB_signY)
 
-        self.comb += If(self.overflow & self.A[width-1],self.Y.eq(min)).Elif(~self.overflow, self.Y.eq(self.YY)).Else(self.Y.eq(max))
+        self.comb += If(self.overflow & self.A[width-1],
+                        self.Y.eq(min)).Elif(~self.overflow, 
+                                             self.Y.eq(self.YY)).Else(
+                                                       self.Y.eq(max))
         #self.comb += self.Y.eq(self.YY)
 
 class DiffDelay(Module):
@@ -151,44 +160,17 @@ def test_diff():
 
 
 def subs_tb(dut: Substractor):
-    print("A = 100 B = 1  99")    
-    yield dut.A.eq(100)
-    yield dut.B.eq(1)
-    yield
-    print((yield dut.Y),  (yield dut.YY),(yield dut.overflow))
 
-
-    print("A = 1 B = 100  -99")    
-    yield dut.A.eq(1)
-    yield dut.B.eq(100)
-    yield
-    print((yield dut.Y),  (yield dut.YY), (yield dut.overflow))
-
-
-    print("A = 10 B = -120  130")    
-    yield dut.A.eq(10)
-    yield dut.B.eq(-120)
-    yield
-    print((yield dut.Y), (yield dut.overflow))
-
-    print("A = -10 B = 120  -130")    
-    yield dut.A.eq(-10)
-    yield dut.B.eq(120)
-    yield
-    print((yield dut.Y), (yield dut.overflow))
-
-    print("A = -10 B = 100  -110")    
-    yield dut.A.eq(-10)
-    yield dut.B.eq(100)
-    yield
-    print((yield dut.Y), (yield dut.YY), (yield dut.overflow))
-
-    print("A = -10 B = 10  -20")    
-    yield dut.A.eq(-10)
-    yield dut.B.eq(10)
-    yield
-    print((yield dut.Y), (yield dut.YY), (yield dut.overflow))
-
+    AB = [  
+            (100, 1, 99), (1, 100, -99), 
+            (10, -120, 130), (-10, 120, -130), 
+            (-10, 100, -110), (-10, 10, -20)          
+          ]
+    for ab in AB:
+        yield dut.A.eq(ab[0])
+        yield dut.B.eq(ab[1])
+        yield
+        print(f'A {(yield dut.A)} B {(yield dut.B)} Y {(yield dut.Y)},  YY {(yield dut.YY)}, OVF {(yield dut.overflow)} \n')
 
 def test_substra():
     dut = Substractor()
@@ -197,4 +179,4 @@ def test_substra():
 
 
 if __name__ == "__main__":
-    test_diff()
+    test_substra()
