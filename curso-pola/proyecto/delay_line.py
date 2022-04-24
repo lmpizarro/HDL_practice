@@ -62,7 +62,51 @@ class Substractor(Module):
                         self.Y.eq(min)).Elif(~self.overflow, 
                                              self.Y.eq(self.YY)).Else(
                                                        self.Y.eq(max))
-        #self.comb += self.Y.eq(self.YY)
+
+class Adder(Module):
+    def __init__(self, width=8):
+
+        """
+            two's complement overflow
+
+            https://www.doc.ic.ac.uk/~eedwards/compsys/arithmetic/index.html
+        """
+
+
+        max = int(math.pow(2, width - 1) - 1)
+        min = int(-math.pow(2, width - 1))
+
+        print(f'Adder width {width} max {max} min {min}')
+        
+        self.xor_signA_signB = Signal()
+        self.xor_signB_signYY = Signal()
+        self.xor_signA_signYY = Signal()
+        self.overflow = Signal()
+
+        self.A = Signal((width, True))
+        self.B = Signal((width, True))
+        
+        self.YY = Signal((width, True))
+        self.Y = Signal((width, True))
+
+        self.ios = {self.A, 
+                    self.B, 
+                    self.Y, 
+                    self.YY, 
+                    self.overflow}
+
+        self.comb += self.YY.eq(self.A + self.B)
+
+        self.comb += self.xor_signA_signB.eq(self.A[width-1] == self.B[width -1])
+        self.comb += self.xor_signB_signYY.eq(self.B[width-1] == self.YY[width-1])
+        self.comb += self.overflow.eq((self.xor_signA_signB & ~self.xor_signB_signYY))
+
+        self.comb += If(self.overflow & self.A[width-1],
+                        self.Y.eq(min)).Elif(self.overflow & (~self.A[width-1]), 
+                                             self.Y.eq(max)).Else(
+                                                       self.Y.eq(self.YY))
+
+
 
 class DiffDelay(Module):
     def __init__(self, width=8, depth1=10, depth2=5):
@@ -169,11 +213,35 @@ def subs_tb(dut: Substractor):
         yield
         print(f'A {(yield dut.A)} B {(yield dut.B)} Y {(yield dut.Y)},  YY {(yield dut.YY)}, OVF {(yield dut.overflow)} \n')
 
+def adder_tb(dut: Substractor):
+
+    AB = [  
+            (100, 28, 127),          
+            (-100, -28, 127),          
+            (-100, -29, 127),          
+            (100, 27, 127),          
+            (-100, 27, 127),          
+            (50, 27, 77),          
+            (-50, -27, 77),          
+          ]
+    for ab in AB:
+        yield dut.A.eq(ab[0])
+        yield dut.B.eq(ab[1])
+        yield
+        print(f'A {(yield dut.A)} B {(yield dut.B)} Y {(yield dut.Y)},  YY {(yield dut.YY)}, OVF {(yield dut.overflow)} \n')
+
+
 def test_substra():
     dut = Substractor()
     tb = subs_tb(dut)
     run_simulation(dut, tb)
 
 
+def test_adder():
+    dut = Adder()
+    tb = adder_tb(dut)
+    run_simulation(dut, tb)
+
+
 if __name__ == "__main__":
-    test_substra()
+    test_adder()
