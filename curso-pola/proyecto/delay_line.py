@@ -36,8 +36,8 @@ class Substractor(Module):
 
         print(f'Substractor width {width} max {max} min {min}')
         
-        self.xor_sign = Signal()
-        self.xor_signB_signY = Signal()
+        self.xor_signA_signB = Signal()
+        self.xor_signB_signYY = Signal()
         self.overflow = Signal()
 
         self.A = Signal((width, True))
@@ -54,9 +54,9 @@ class Substractor(Module):
 
         self.comb += self.YY.eq(self.A + (-self.B))
 
-        self.comb += self.xor_sign.eq(self.A[width-1] == self.B[width -1])
-        self.comb += self.xor_signB_signY.eq(self.B[width-1] == self.YY[width-1])
-        self.comb += self.overflow.eq(~self.xor_sign & self.xor_signB_signY)
+        self.comb += self.xor_signA_signB.eq(self.A[width-1] == self.B[width -1])
+        self.comb += self.xor_signB_signYY.eq(self.B[width-1] == self.YY[width-1])
+        self.comb += self.overflow.eq(~self.xor_signA_signB & self.xor_signB_signYY)
 
         self.comb += If(self.overflow & self.A[width-1],
                         self.Y.eq(min)).Elif(~self.overflow, 
@@ -105,9 +105,6 @@ class DiffDelay(Module):
         self.comb += self.o_bipolar.eq(self.o_f_q - self.delay3.o_q)
 
         self.sync += self.accum.eq(self.accum + self.o_bipolar)
-
-
-
         self.comb += self.o_q.eq(self.accum>>2)
 
 
