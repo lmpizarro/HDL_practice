@@ -1,6 +1,6 @@
 from migen import Signal, Module, If, Array, run_simulation
 from migen.fhdl import verilog
-
+from pathlib import Path
 
 
 class Estimator(Module):
@@ -164,13 +164,16 @@ def estimator_tb(estmtr: Estimator):
     yield
 
 if __name__ == "__main__":
-    convert = False
-
+    convert = True
+    
     dut = Estimator()
-    path = '/home/lmpizarro/devel/project/HDL/verilog/curso-pola/proyecto/matrix'
+    path = Path(__file__).resolve().parent
+    
     file_path = f'{path}/simple.v'
     if convert:
         verilog.convert(dut, dut.ios).write(file_path)
     else:
         tb = estimator_tb(dut)
         run_simulation(dut, tb, vcd_name=f"{path}/sum.vcd")
+
+    print()
