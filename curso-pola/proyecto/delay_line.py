@@ -80,7 +80,6 @@ class Adder(Module):
         
         self.xor_signA_signB = Signal()
         self.xor_signB_signYY = Signal()
-        self.xor_signA_signYY = Signal()
         self.overflow = Signal()
 
         self.A = Signal((width, True))
