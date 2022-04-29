@@ -29,17 +29,21 @@ def sin_gen(amplitude:float =1230,
 
 def gbm_model(initial_value:float = 228, 
                       size:int=100, mu:float=0.007, 
-                      sigma:float=0.17, dt:int=1,
-                      limit=1000):
+                      sigma:float=0.17, dt:int=1):
     
     signal  = [initial_value]
     for i in range(1,size):
         noise = random.gauss(mu=mu*dt,sigma= sigma*math.sqrt(dt))
         value = signal[i-1] * (1 + mu*dt + noise)
-        if value > limit:
-            value = limit
         signal.append(value)
         
+    return signal 
+
+def step(initial_value:float = 1, 
+                      size:int=100):
+    
+    signal  = [0]*40 + [1]*size + [0]*40
+       
     return signal 
 
 
