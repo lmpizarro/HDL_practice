@@ -76,45 +76,6 @@ class AlphaBetaGamma:
 
         return self.ye0
 
-
-class AlphaBetaGammaSP:
-
-    def __init__(self, alfa=.2, beta=.1, gamma=.05, T=1) -> None:
-        self.ye = 0
-        self.x0 = [0, 0, 0]
-        self.gamma = gamma
-        self.beta = beta
-        self.alfa = alfa
-        self.T = T
-
-    def set_coefs(self, alfa=.7, beta=0.01, gamma=0.0001, T=1):
-        eq_l = -1 + 2 / alfa
-        print(eq_l)
-        self.gamma = gamma
-        self.beta = beta
-        self.alfa = alfa
-        self.T = T
-
-    def model_float(self, y: float):
-
-        error = y - self.ye
-
-        # smooth
-        xsk = self.x0[0] + self.alfa * error
-        vsk = self.x0[1] + self.beta * error / self.T
-        ask = self.x0[2] + self.gamma * error
-
-        # prediction
-        self.x0[0] = xsk + self.T * vsk + ask * self.T * self.T / 2 
-        self.x0[1] = vsk + self.T * ask 
-        self.x0[2] = ask
-
-        self.ye = self.x0[0]
-
-        return self.ye
-
-
-
 def sim_albega_float():
     model = AlphaBetaGamma()
     model.set_coefs()

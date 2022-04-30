@@ -19,9 +19,9 @@ if __name__ == '__main__':
     out = []
     sig = gbm_model(initial_value=100, size=200)
     sig = sin_gen(amplitude=13,rel_freq=.1, cycles=10)
-    sig = step(size=10)
+    sig = step(size=40)
     for i in sig:
-        ye = abg_e.model_float(i)
+        ye = est.model_fp(i)
         out.append(ye)
         # sig.append(1)
 

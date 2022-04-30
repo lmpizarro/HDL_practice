@@ -1,6 +1,7 @@
 import math
 from typing import List
 import random
+import matplotlib.pyplot as plt
 
 
 def sin_gen_freq_sampler(amplitude:float =1230, 
@@ -40,9 +41,11 @@ def gbm_model(initial_value:float = 228,
     return signal 
 
 def step(initial_value:float = 1, 
-                      size:int=100):
+                      size:int=100,
+                      tail: int=40,
+                      head: int=40):
     
-    signal  = [0]*40 + [1]*size + [0]*40
+    signal  = [0]*tail + [initial_value]*size + [0]*head
        
     return signal 
 
@@ -66,11 +69,6 @@ def random_walk(size=100,
     signal.extend([post_value[1]]*post_value[0])
 
     return signal
-
-
-
-
-import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     signal = sin_gen()
