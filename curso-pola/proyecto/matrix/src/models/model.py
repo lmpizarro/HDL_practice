@@ -1,12 +1,18 @@
 from fixedpoint import FixedPoint
 from abc import ABC, abstractmethod
+from typing import List
 
 class Model(ABC):
     """
 
     """
+    def __init__(self, 
+                 dim: int = 2,
+                 n_inp: int=1, 
+                 n_out: int=1, 
+                 init_val: List[float]=[0.0, 0.0],  
+                 m: int=8, n:int=8) -> None:
 
-    def __init__(self, dim: int = 2, init_val=[0.0, 0.0], m=8, n=8) -> None:
         super().__init__()
         print(f"Model dim {dim} init_val {init_val} m int {m} n frac {n}")
         self.n = n
@@ -17,16 +23,17 @@ class Model(ABC):
         self.X0_float = [init_val[i] for i in range(dim)]
         self.X0_fp = [FixedPoint(init_val[i], signed=True, m=m, n=n) for i in range(dim)]
 
-        self.coefs = {'a0': {'float':1.0}, 'a1' : {'float':1.0}, 
-                      'a2' : {'float':0.0}, 'a3' : {'float':1.0}, 
-                      'h0' : {'float':1},'h1' : {'float':0}, 
-                      'k0' : {'float':.72},'k1' : {'float':.08}}
+        self.coefs = {f'a{i}':{'float':0.0} for i in range(dim*dim)}
+        self.coefs.update({f'b{i}':{'float':0.0} for i in range(dim*n_inp)})
+        self.coefs.update({f'h{i}':{'float':0.0} for i in range(dim*n_out)})
+        self.coefs.update({f'k{i}':{'float':0.0} for i in range(dim*n_inp)})
+        print(self.coefs)
 
     @abstractmethod
     def set_fp_coefs(self):
         """    
         """
-
+    @abstractmethod
     def set_coefs(self):
         """
         """
@@ -37,7 +44,7 @@ class Model(ABC):
         """
 
     @abstractmethod
-    def model_fp(self):
+    def model_fp(self, y: float):
         """
         """
     

@@ -3,8 +3,18 @@ from fixedpoint import FixedPoint
 
 class Estimator(Model):
 
-    def __init__(self, dim: int = 2, init_val=[0.0, 0.0], m=8, n=8) -> None:
-        super().__init__(dim, init_val, m, n)
+    def __init__(self, 
+                 dim: int = 2, 
+                 n_inp=1, n_out=1, 
+                 init_val=[0.0, 0.0], 
+                 m:int=8, n:int=8) -> None:
+
+        super().__init__(dim, n_inp, n_out, init_val, m, n)
+        self.coefs = {'a0': {'float':1.0}, 'a1' : {'float':1.0}, 
+                      'a2' : {'float':0.0}, 'a3' : {'float':1.0}, 
+                      'h0' : {'float':1},'h1' : {'float':0}, 
+                      'k0' : {'float':.82},'k1' : {'float':.0008}}
+
 
     def set_fp_coefs(self):
         for c in self.coefs:
@@ -46,6 +56,7 @@ class Estimator(Model):
 
         Xe1 = FixedPoint(float(xe1), signed=True, m=self.m, 
                          n=self.n, rounding='convergent')
+
         Xe0 = FixedPoint(float(xe0), signed=True, m=self.m, 
                          n=self.n, rounding='convergent')
 
@@ -65,3 +76,5 @@ class Estimator(Model):
         self.X0_fp[1] = K1 * yerror + Xe1
         return(float(Ye0)) 
 
+    def set_coefs(self):
+        return super().set_coefs()
