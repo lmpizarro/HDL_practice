@@ -27,7 +27,7 @@ class SecondOrder:
         a0 = math.exp(-2*a*self.T)
         a1 = -2*math.exp(-a*self.T) * math.cos(b*self.T)
         a2 = 1
-        gain = 1 / .8 # self.wn * self. wn / b 
+        gain = (a2+a1+a0) / b1
 
         return {'ZFT':{'b1': b1, 'a2': a2, 'a1': a1, 'a0': a0, 'gain': gain},
                 'STF': {'b0': self.wn * self.wn, 'a2': 1, 
