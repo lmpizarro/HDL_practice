@@ -27,24 +27,23 @@ class Model(ABC):
         self.coefs.update({f'b{i}':{'float':0.0} for i in range(dim*n_inp)})
         self.coefs.update({f'h{i}':{'float':0.0} for i in range(dim*n_out)})
         self.coefs.update({f'k{i}':{'float':0.0} for i in range(dim*n_inp)})
-        print(self.coefs)
 
     @abstractmethod
-    def set_fp_coefs(self):
+    def set_fp_coefs(self) -> None:
         """    
         """
     @abstractmethod
-    def set_coefs(self):
+    def set_coefs(self) -> None:
         """
         """
 
     @abstractmethod
-    def model_float(self, input:float):
+    def model_float(self, input:float) -> float:
         """
         """
 
     @abstractmethod
-    def model_fp(self, y: float):
+    def model_fp(self, y: float) -> float:
         """
         """
     

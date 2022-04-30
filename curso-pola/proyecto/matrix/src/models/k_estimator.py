@@ -10,18 +10,13 @@ class Estimator(Model):
                  m:int=8, n:int=8) -> None:
 
         super().__init__(dim, n_inp, n_out, init_val, m, n)
-        self.coefs = {'a0': {'float':1.0}, 'a1' : {'float':1.0}, 
-                      'a2' : {'float':0.0}, 'a3' : {'float':1.0}, 
-                      'h0' : {'float':1},'h1' : {'float':0}, 
-                      'k0' : {'float':.82},'k1' : {'float':.0008}}
 
-
-    def set_fp_coefs(self):
+    def set_fp_coefs(self) -> None:
         for c in self.coefs:
             A0 = FixedPoint(self.coefs[c]['float'], signed=True, m=self.m, n=self.n)
             self.coefs[c]['fp'] = A0
 
-    def model_float(self, y:float):
+    def model_float(self, y:float) -> float:
 
         a0 = self.coefs['a0']['float'] 
         a1 = self.coefs['a1']['float']
@@ -45,7 +40,7 @@ class Estimator(Model):
         self.X0_float[1] = k1 * yerror + xe1
         return ye0
 
-    def model_fp(self, y: float):
+    def model_fp(self, y: float) -> float:
         a0x00 = self.X0_fp[0] * self.coefs['a0']['fp']
         a1x10 = self.X0_fp[1] * self.coefs['a1']['fp']
         a2x00 = self.X0_fp[0] * self.coefs['a2']['fp']
@@ -76,5 +71,9 @@ class Estimator(Model):
         self.X0_fp[1] = K1 * yerror + Xe1
         return(float(Ye0)) 
 
-    def set_coefs(self):
-        return super().set_coefs()
+    def set_coefs(self) -> None:
+        self.coefs = {'a0': {'float':1.0}, 'a1' : {'float':1.0}, 
+                      'a2' : {'float':0.0}, 'a3' : {'float':1.0}, 
+                      'h0' : {'float':1},'h1' : {'float':0}, 
+                      'k0' : {'float':.82},'k1' : {'float':.0008}}
+

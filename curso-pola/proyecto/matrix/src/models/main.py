@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     est = Estimator()
+    est.set_coefs()
     est.set_fp_coefs()
 
     abg_e = Abge()
