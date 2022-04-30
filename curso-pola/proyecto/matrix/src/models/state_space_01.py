@@ -1,4 +1,4 @@
-from fixedpoint import FixedPoint
+import matplotlib.pyplot as plt
 from signals import  sin_gen, gbm_model, step
 import pprint
 
@@ -20,8 +20,8 @@ class AlphaBetaGamma:
         self.x0 = [0, 0, 0]
         self.ye0 = 0.0
 
-    def _set_coefs(self, alfa:float = .5, beta:float = .1, 
-                        gamma:float = 0.1, T:float = 1.0):
+    def set_coefs__1(self, alfa:float = .7, beta:float = .01, 
+                        gamma:float = 0.0001, T:float = 1.0):
         K1 = alfa + beta + (gamma /4.0)
         K3 = (beta + 0.5 * gamma) / T
         K2 = T*T/2.0
@@ -41,6 +41,40 @@ class AlphaBetaGamma:
         self.coefs['h0']['float'] = 1.0 
         self.coefs['h1']['float'] = 0.0 
         self.coefs['h2']['float'] = 0.0 
+
+    def model_float__1(self, y:float):
+        """
+        """
+        a0 = self.coefs['a0']['float'] 
+        a1 = self.coefs['a1']['float']
+        a2 = self.coefs['a2']['float']
+        a3 = self.coefs['a3']['float']
+        a4 = self.coefs['a4']['float'] 
+        a5 = self.coefs['a5']['float']
+        a6 = self.coefs['a6']['float']
+        a7 = self.coefs['a7']['float']
+        a8 = self.coefs['a8']['float']
+
+        h0 = self.coefs['h0']['float']
+        h1 = self.coefs['h1']['float']
+        h2 = self.coefs['h2']['float']
+
+        b0 = self.coefs['b0']['float']
+        b1 = self.coefs['b1']['float']
+        b2 = self.coefs['b2']['float']
+
+        x00 = self.x0[0]
+        x10 = self.x0[1]
+        x20 = self.x0[2]
+
+        self.x0[0] = a0 * x00 + a1 * x10 + a2 * x20 + b0 * y 
+        self.x0[1] = a3 * x00 + a4 * x10 + a5 * x20 + b1 * y 
+        self.x0[2] = a6 * x00 + a7 * x10 + a8 * x20 + b2 * y 
+
+        self.ye0 = h0 * self.x0[0] + h1 * self.x0[1] + h2 * self.x0[2]
+
+
+        return self.ye0
 
     def set_coefs(self, alfa:float = .7, beta:float = .01, 
                         gamma:float = .0001, T:float = 1.0):
@@ -96,6 +130,8 @@ class AlphaBetaGamma:
 
         return self.ye0
 
+
+
 class AlphaBetaGammaSP:
 
     def __init__(self, alfa=.2, beta=.1, gamma=.05, T=1) -> None:
@@ -133,17 +169,16 @@ class AlphaBetaGammaSP:
         return self.ye
 
 
-import matplotlib.pyplot as plt
 
 def sim_albega_float():
-    model = AlphaBetaGamma()
+    model = AlphaBetaGammaSP()
     model.set_coefs()
 
     # pp.pprint(model.coefs)
 
     sig = sin_gen(rel_freq=.05)
     sig_ = gbm_model(size=200)
-    sig_ = step(size=10)
+    sig = step(size=10)
     out = []
     # sig = [1]*40
     for s in sig:
