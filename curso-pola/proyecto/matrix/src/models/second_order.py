@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 from scipy import signal
 import matplotlib.pyplot as plt
@@ -34,7 +35,7 @@ class SecondOrder:
                         'a1': self.damping*2*self.wn, 'a0': self.wn},
                 'perf': self.perf}
 
-if __name__ == '__main__':
+def test_2ord():
     so = SecondOrder()
     zft = so.z_transform()
 
@@ -51,7 +52,6 @@ if __name__ == '__main__':
     tf = signal.TransferFunction([zft['ZFT']['gain'] * zft['ZFT']['b1'], 0], 
                                  [zft['ZFT']['a2'], zft['ZFT']['a1'], zft['ZFT']['a0']], 
                                  dt=so.T)
-    import numpy as np
 
     t,y = signal.dstep(tf, n=20)
     plt.step(t, np.squeeze(y))
@@ -61,3 +61,25 @@ if __name__ == '__main__':
     plt.show()
 
     print(tf.to_ss())
+
+
+if __name__ == '__main__':
+    filt = signal.butter(N=3, Wn=.2, btype='low', analog=False, output='ba')
+
+    print(filt)
+
+    tf = signal.TransferFunction(filt[0], filt[1], dt=1)
+
+    t,y = signal.dstep(tf, n=20)
+    plt.step(t, np.squeeze(y))
+    plt.grid()
+    plt.xlabel('n [samples]')
+    plt.ylabel('Amplitude')
+    plt.show()
+
+   
+    print(tf.to_ss().A)
+    print(tf.to_ss().B)
+    print(tf.to_ss().C)
+    print(tf.to_ss().D)
+    print(tf.poles)
