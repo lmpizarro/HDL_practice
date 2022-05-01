@@ -78,6 +78,72 @@ class Butter(Model):
 
         return self.ye0
 
+    def round_coefs(self, rond=3):
+
+        coefs = []
+        for i in range(self.dim**2):
+            key = f'a{i}'
+            c = round(self.coefs[key]['float'], rond)
+            self.coefs[key]['float'] = c
+            coefs.append(c)
+    
+        coefs = []
+        for i in range(self.dim):
+            key = f'b{i}'
+            c = round(self.coefs[key]['float'][0], rond)
+            self.coefs[key]['float'] = c
+            coefs.append(c)
+        
+        coefs = []
+        for i in range(self.dim):
+            key = f'h{i}'
+            c = round(self.coefs[key]['float'], rond)
+            self.coefs[key]['float'] = c
+            coefs.append(c)
+ 
+        key = 'k0' 
+        c = round(self.coefs[key]['float'], rond)
+        self.coefs[key]['float'] = c
+
+    def show_coefs(self, fp=False):
+
+        coefs = []
+        for i in range(self.dim**2):
+            key = f'a{i}'
+            c = self.coefs[key]['float']
+            if fp:
+                c =float(self.coefs[key]['fp'])
+            coefs.append(c)
+        print('A', coefs)
+    
+        coefs = []
+        coefs_fp = []
+        for i in range(self.dim):
+            key = f'b{i}'
+            c = self.coefs[key]['float']
+
+            if fp:
+                c = float(self.coefs[key]['fp'])
+            coefs.append(c)
+        print('B', coefs)
+        
+        coefs = []
+        for i in range(self.dim):
+            key = f'h{i}'
+            c = self.coefs[key]['float']
+        
+            if fp:
+                c = float(self.coefs[key]['fp'])
+            coefs.append(c)
+        print('C ', coefs)
+ 
+        key = 'k0' 
+
+        c = self.coefs[key]['float']
+        if fp:
+            c = float(self.coefs[key]['fp'])
+        print('D ', float(c))
+
 
     def model_fp(self, u: float) -> float:
 
@@ -212,20 +278,25 @@ class Butter(Model):
         return float(Y0_fp)
 
 if __name__== '__main__':
-    bu = Butter(m=4, n=16)
+    bu = Butter(m=5, n=13)
 
     bu.filter()
     bu.set_coefs()
+    bu.show_coefs()
+    bu.round_coefs(rond=3)
+    bu.show_coefs()
     bu.set_fp_coefs()
+    bu.show_coefs(fp=True)
 
     sig = []
     out = []
     pout = []
     diff = []
+    val = .5
     for i in range(400):
-        sig.append(1)
-        yf = bu.model_float(1)
-        y = bu.model_fp(1)
+        sig.append(val)
+        yf = bu.model_float(val)
+        y = bu.model_fp(val)
         out.append(yf)
         pout.append(y)
         diff.append(yf-y)
