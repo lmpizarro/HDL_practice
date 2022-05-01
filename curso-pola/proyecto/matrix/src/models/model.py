@@ -30,8 +30,18 @@ class Model(ABC):
 
     @abstractmethod
     def set_fp_coefs(self) -> None:
-        """    
-        """
+        for c in self.coefs:
+            A0 = FixedPoint(self.coefs[c]['float'], signed=True, m=self.m, n=self.n)
+            self.coefs[c]['fp'] = A0
+
+    def bin_coefs(self) -> List[str]:
+        b_coefs = []
+        for c in self.coefs:
+            a = bin(self.coefs[c]['fp']).split('b')[1].zfill(self.m + self.n)
+            a = '0b'+a
+            b_coefs.append(a)
+        return b_coefs
+
     @abstractmethod
     def set_coefs(self) -> None:
         """

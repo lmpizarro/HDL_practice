@@ -36,13 +36,9 @@ class Butter(Model):
 
         self.coefs[f'k{0}']['float'] = self.ss.D[0][0]
 
-
     def set_fp_coefs(self) -> None:
-        for c in self.coefs:
-            A0 = FixedPoint(self.coefs[c]['float'], signed=True, m=self.m, n=self.n)
-            self.coefs[c]['fp'] = A0
-
-
+        return super().set_fp_coefs()
+ 
     def model_float(self, u: float) -> float:
         """
         """
@@ -105,7 +101,7 @@ class Butter(Model):
         c = round(self.coefs[key]['float'], rond)
         self.coefs[key]['float'] = c
 
-    def show_coefs(self, fp=False):
+    def show_coefs(self, fp=False, bin=False):
 
         coefs = []
         for i in range(self.dim**2):
@@ -117,7 +113,6 @@ class Butter(Model):
         print('A', coefs)
     
         coefs = []
-        coefs_fp = []
         for i in range(self.dim):
             key = f'b{i}'
             c = self.coefs[key]['float']
@@ -287,6 +282,7 @@ if __name__== '__main__':
     bu.show_coefs()
     bu.set_fp_coefs()
     bu.show_coefs(fp=True)
+    print(bu.bin_coefs())
 
     sig = []
     out = []
