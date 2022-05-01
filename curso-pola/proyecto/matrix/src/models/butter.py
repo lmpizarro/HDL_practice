@@ -83,27 +83,85 @@ class Butter(Model):
 
         U = FixedPoint(u, signed=True, m=self.m, n=self.n, 
                        overflow='clamp')
-        a0x00 = self.X0_fp[0] * self.coefs['a0']['fp']
-        a1x10 = self.X0_fp[1] * self.coefs['a1']['fp']
-        a2x20 = self.X0_fp[2] * self.coefs['a2']['fp']
 
-        x0 = a0x00 + a1x10 + a2x20
-
-        a3x00 = self.X0_fp[0] * self.coefs['a3']['fp']
-        a4x10 = self.X0_fp[1] * self.coefs['a4']['fp']
-        a5x20 = self.X0_fp[2] * self.coefs['a5']['fp']
-
-        x1 = a3x00 + a4x10 + a5x20
+        A0x00 = self.X0_fp[0] * self.coefs['a0']['fp']
+        a0x00 = FixedPoint(float(A0x00), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
         
-        a6x00 = self.X0_fp[0] * self.coefs['a6']['fp']
-        a7x10 = self.X0_fp[1] * self.coefs['a7']['fp']
-        a8x20 = self.X0_fp[2] * self.coefs['a8']['fp']
+        A1x10 = self.X0_fp[1] * self.coefs['a1']['fp']
+        a1x10 = FixedPoint(float(A1x10), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
         
-        x2 = a6x00 + a7x10 + a8x20
+        A2x20 = self.X0_fp[2] * self.coefs['a2']['fp']
+        a2x20 = FixedPoint(float(A2x20), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
 
-        b0u = U * self.coefs['b0']['fp']
-        b1u = U * self.coefs['b1']['fp']
-        b2u = U * self.coefs['b2']['fp']
+
+        X0p = a0x00 + a1x10
+        x0p = FixedPoint(float(X0p), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+
+
+        X0 = x0p + a2x20
+        x0 = FixedPoint(float(X0), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+
+
+        A3x00 = self.X0_fp[0] * self.coefs['a3']['fp']
+        a3x00 = FixedPoint(float(A3x00), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+        
+        A4x10 = self.X0_fp[1] * self.coefs['a4']['fp']
+        a4x10 = FixedPoint(float(A4x10), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+
+        A5x20 = self.X0_fp[2] * self.coefs['a5']['fp']
+        a5x20 = FixedPoint(float(A5x20), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+
+        X1p = a3x00 + a4x10
+
+        x1p = FixedPoint(float(X1p), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+
+
+        X1 = x1p + a5x20
+
+        x1 = FixedPoint(float(X1), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+
+
+        A6x00 = self.X0_fp[0] * self.coefs['a6']['fp']
+        a6x00 = FixedPoint(float(A6x00), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+        A7x10 = self.X0_fp[1] * self.coefs['a7']['fp']
+        a7x10 = FixedPoint(float(A7x10), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+        A8x20 = self.X0_fp[2] * self.coefs['a8']['fp']
+        a8x20 = FixedPoint(float(A8x20), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+
+        X2p = a6x00 + a7x10 
+        x2p = FixedPoint(float(X2p), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+
+
+
+        X2 = x2p + a8x20
+        x2 = FixedPoint(float(X2), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+
+
+
+        B0u = U * self.coefs['b0']['fp']
+        b0u = FixedPoint(float(B0u), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+        B1u = U * self.coefs['b1']['fp']
+        b1u = FixedPoint(float(B1u), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
+        B2u = U * self.coefs['b2']['fp']
+        b2u = FixedPoint(float(B2u), signed=True, m=self.m+1, 
+                        n=self.n, rounding='convergent')
 
         x0 = x0 + b0u
         x1 = x1 + b1u
@@ -116,11 +174,41 @@ class Butter(Model):
         self.X0_fp[2] = FixedPoint(float(x2), signed=True, m=self.m, 
                         n=self.n, rounding='convergent')
 
-        Y0_fp = self.coefs['h0']['fp'] * self.X0_fp[0] + \
-                     self.coefs['h1']['fp'] * self.X0_fp[1] + \
-                     self.coefs['h2']['fp'] * self.X0_fp[2] + \
-                     self.coefs['k0']['fp'] * U
+        y1 = self.coefs['h0']['fp'] * self.X0_fp[0] 
+        Y1 = FixedPoint(float(y1), signed=True, m=self.m, 
+                        n=self.n, rounding='convergent')
 
+
+        y2 = self.coefs['h1']['fp'] * self.X0_fp[1]
+        Y2 = FixedPoint(float(y2), signed=True, m=self.m, 
+                        n=self.n, rounding='convergent')
+
+
+        y3 = self.coefs['h2']['fp'] * self.X0_fp[2]
+        Y3 = FixedPoint(float(y3), signed=True, m=self.m, 
+                        n=self.n, rounding='convergent')
+
+       
+        y4 = self.coefs['k0']['fp'] * U
+        Y4 = FixedPoint(float(y4), signed=True, m=self.m, 
+                        n=self.n, rounding='convergent')
+
+ 
+        y01 = Y1 + Y2
+        Y01 = FixedPoint(float(y01), signed=True, m=self.m, 
+                        n=self.n, rounding='convergent')
+        y02 = Y01 + Y3
+
+        Y02 = FixedPoint(float(y02), signed=True, m=self.m, 
+                        n=self.n, rounding='convergent')
+
+        y0_fp = Y02 + Y4
+        Y0_fp = FixedPoint(float(y0_fp), signed=True, m=self.m, 
+                        n=self.n, rounding='convergent')
+
+
+        # print(Y0_fp.m, Y0_fp.n)
+        # exit()
         return float(Y0_fp)
 
 if __name__== '__main__':
