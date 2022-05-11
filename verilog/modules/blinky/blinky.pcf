@@ -1,0 +1,6 @@
+#------ User LEDs
+set_io --warn-no-port LED3 4  #-- output
+
+
+# -------------------------- SYSTEM CLOCK -------------------------------------
+set_io --warn-no-port CLK 94  # input
