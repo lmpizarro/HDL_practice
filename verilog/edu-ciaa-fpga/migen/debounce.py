@@ -16,7 +16,8 @@ class Debouncer(Module):
                                 self.counter.eq(self.counter + 1)
                         )
 
-        self.comb += If(~self.button1 & self.counter > 10000, self.led0.eq(1)).Else(self.led0.eq(0))
+        self.comb += If(~self.button1 & self.counter > 10000, 
+                         self.led0.eq(1)).Else(self.led0.eq(0))
 
 
         self.pin_assign = [['led0', 2],
