@@ -37,7 +37,7 @@ class Build:
         PROJ = f'{self.path_build}/{self.project}'
         device = 'hx4k'
         package = 'tq144'
-        base = f'nextpnr-ice40 --{device}  --package {package} '
+        base = f'nextpnr-ice40 --{device}  --package {package} --pcf-allow-unconstrained '
         return f'{base} --json {PROJ}.json --pcf {PROJ}.pcf --asc {PROJ}.asc'
 
     def pack(self):
