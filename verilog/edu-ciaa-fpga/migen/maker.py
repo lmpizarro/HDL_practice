@@ -70,12 +70,9 @@ class Build:
         pcf = gen_pcf(pin_assign=self.device.pin_assign)
         with open(fpath, 'w') as fp:
             fp.write(pcf)
-            print(pcf)
 
         fpath = self.path_build / f'{self.project}.prg'
         prg_cmds = self.gen_commands()
         with open(fpath, 'w') as fp:
             fp.write(prg_cmds)
-        print(fpath)
-        print(prg_cmds)
 
