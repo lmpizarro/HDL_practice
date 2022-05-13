@@ -1,6 +1,6 @@
 from migen import *
 from migen.fhdl import verilog
-from makeware import make, gen_files
+from educiaa_fpga import Build
 
 from pathlib import Path
 
@@ -21,14 +21,10 @@ if __name__ == '__main__':
 
     PROJ = 'setbit'
 
-    cdir = Path(__file__).parent
-    path_build = cdir / 'build'
-    path_build.mkdir(parents=False, exist_ok=True)
+    prj = Build(project=PROJ, device=sb)
+    prj.generate_verilog()
 
-    # generate verilog    
-    fpath = path_build / f'{PROJ}.v'
-    verilog.convert(sb, sb.ios).write(fpath)
+    prj.gen_files()
+    prj.make()
 
-    gen_files(PROJ, path_build, sb.pin_assign)
-    make(PROJ, path_build)
 

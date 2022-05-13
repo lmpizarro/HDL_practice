@@ -273,7 +273,7 @@ class Butter(Model):
         return float(Y0_fp)
 
 if __name__== '__main__':
-    bu = Butter(m=5, n=13)
+    bu = Butter(m=5, n=11)
 
     bu.filter()
     bu.set_coefs()
@@ -288,7 +288,7 @@ if __name__== '__main__':
     out = []
     pout = []
     diff = []
-    val = .5
+    val = 1 
     for i in range(400):
         sig.append(val)
         yf = bu.model_float(val)

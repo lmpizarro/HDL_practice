@@ -1,5 +1,6 @@
 *.csv
 *.out
+build/
 verilog/modules/curso/lab02/iirSim/tool/
 .ipynb_checkpoints/
 .DS_Store
