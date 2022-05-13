@@ -20,7 +20,6 @@ class Blinker(Module):
 
 
         self.pin_assign = [['led0', 2],
-                           ['sys_clk',94] 
                            ]
 
 if __name__ == '__main__':

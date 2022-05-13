@@ -7,7 +7,7 @@ from migen.fhdl import verilog
     MAKER
 """
 def gen_pcf(pin_assign=[['led0', 2]]):
-    pcf = ''
+    pcf = 'set_io --warn-no-port sys_clk 94\n'
 
     for pa in pin_assign:
         pcf += f'set_io --warn-no-port {pa[0]} {pa[1]}\n'
@@ -37,7 +37,7 @@ class Build:
         PROJ = f'{self.path_build}/{self.project}'
         device = 'hx4k'
         package = 'tq144'
-        base = f'nextpnr-ice40 --{device}  --package {package} --pcf-allow-unconstrained'
+        base = f'nextpnr-ice40 --{device}  --package {package} '
         return f'{base} --json {PROJ}.json --pcf {PROJ}.pcf --asc {PROJ}.asc'
 
     def pack(self):
