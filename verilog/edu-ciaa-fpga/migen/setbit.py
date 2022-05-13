@@ -1,8 +1,5 @@
 from migen import *
-from migen.fhdl import verilog
-from educiaa_fpga import Build
-
-from pathlib import Path
+from maker import Build
 
 class SetBit(Module):
     def __init__(self) -> None:
