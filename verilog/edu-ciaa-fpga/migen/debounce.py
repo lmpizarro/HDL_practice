@@ -16,7 +16,7 @@ class Debouncer(Module):
                                 self.counter.eq(self.counter + 1)
                         )
 
-        self.comb += If(~self.button1 & self.counter > 10000, 
+        self.comb += If(~self.button1 & self.counter > 3, 
                          self.led0.eq(1)).Else(self.led0.eq(0))
 
 
@@ -24,15 +24,31 @@ class Debouncer(Module):
                            ['button1', 31]
                            ]
 
-if __name__ == '__main__':
-    sb = Debouncer(maxperiod=1000000)
 
+import random
+def test_bench(dut:Debouncer):
+    for _ in range(10):
+        yield dut.button1.eq(0)
+        for _ in range(random.choice([5,7])):
+            yield
+        yield dut.button1.eq(1)
+        for _ in range(random.choice([5,8])):
+            yield
+
+
+
+if __name__ == '__main__':
+    program = False
+    sb = Debouncer(maxperiod=15)
     PROJ = 'debounce'
 
-    prj = Build(project=PROJ, device=sb)
-    prj.generate_verilog()
+    if program:
+        prj = Build(project=PROJ, device=sb)
+        prj.generate_verilog()
 
-    prj.gen_files()
-    prj.make()
+        prj.gen_files()
+        prj.make()
+    else:
+        run_simulation(sb, test_bench(sb), vcd_name='file.vcd')
 
 
