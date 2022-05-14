@@ -1,4 +1,3 @@
-from curses.ascii import ctrl
 from migen import *
 from maker import Build
 
@@ -8,11 +7,11 @@ class Debouncer(Module):
         self.button1 = Signal()
         self.ios = {self.led0, self.button1}
 
-        deb = Signal(reset=0)
-        q1 = Signal(reset=0)
         s1 = Signal(reset=0)
         s2 = Signal(reset=0)
         s3 = Signal(reset=0)
+        deb = Signal(reset=0)
+        q1 = Signal(reset=0)
         
         self.sync += If(self.button1, s1.eq(0)).Elif(~self.button1, 
               s1.eq(1), s2.eq(s1), s3.eq(s2) )
