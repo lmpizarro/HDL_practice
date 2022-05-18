@@ -5,7 +5,8 @@
 // Two debounced buttons are used to control the duty cycle (step size: 10%)
 module PWM_Generator_Verilog
 
-    #(parameter LIMIT_COUNTER_DEBOUNCE = 4_000_000)
+    #(parameter LIMIT_COUNTER_DEBOUNCE = 4_000_000,
+    parameter LIMIT_COUNTER_PWM = 20)
 (
    clk, // 100MHz clock input 
    inc_duty, // input to increase 10% duty cycle 
@@ -48,7 +49,7 @@ Debounce Debounce2(clk,slow_clk_enable,dec_duty, duty_dec);
 // vary the duty cycle using the debounced buttons above
 always @(posedge clk)
 begin
-  if(duty_inc==1 && DUTY_CYCLE <= 9) 
+  if(duty_inc==1 && DUTY_CYCLE <= LIMIT_COUNTER_PWM) 
    DUTY_CYCLE <= DUTY_CYCLE + 1;// increase duty cycle by 10%
   else if(duty_dec==1 && DUTY_CYCLE>=1) 
    DUTY_CYCLE <= DUTY_CYCLE - 1;//decrease duty cycle by 10%
