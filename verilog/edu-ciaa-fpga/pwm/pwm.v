@@ -59,7 +59,7 @@ end
 always @(posedge clk)
 begin
   counter_PWM <= counter_PWM + 1;
-  if(counter_PWM>=9) 
+  if(counter_PWM>=LIMIT_COUNTER_PWM) 
    counter_PWM <= 0;
 end
 assign PWM_OUT = counter_PWM < DUTY_CYCLE ? 1:0;
