@@ -3,10 +3,13 @@
 // fpga4student.com: FPGA Projects, Verilog projects, VHDL projects 
 // Verilog project: Verilog code for PWM Generator with variable Duty Cycle
 // Two debounced buttons are used to control the duty cycle (step size: 10%)
+// https://www.fpga4student.com/2017/08/verilog-code-for-pwm-generator.html
 module PWM_Generator_Verilog
 
-    #(parameter LIMIT_COUNTER_DEBOUNCE = 4_000_000,
-    parameter LIMIT_COUNTER_PWM = 20)
+    #(
+       parameter LIMIT_COUNTER_DEBOUNCE = 4_000_000,
+       parameter LIMIT_COUNTER_PWM = 12
+      )
 (
    clk, // 100MHz clock input 
    inc_duty, // input to increase 10% duty cycle 
@@ -14,6 +17,8 @@ module PWM_Generator_Verilog
    PWM_OUT // 10MHz PWM output signal 
 );
 
+localparam BITS_COUNTER_PWM = $clog2(LIMIT_COUNTER_PWM+1);
+localparam BITS_COUNTER_DEB = $clog2(LIMIT_COUNTER_DEBOUNCE+1);
 
 input clk;
 input inc_duty;
@@ -23,13 +28,13 @@ output PWM_OUT;
 // slow clock enable signal for debouncing FFs
 wire slow_clk_enable; 
 // counter for creating slow clock enable signals 
-reg[23 :0] counter_debounce=0;
+reg[BITS_COUNTER_DEB - 1 :0] counter_debounce=0;
 
 wire duty_dec, duty_inc;
 
 reg[3:0] counter_PWM=0;// counter for creating 10Mhz PWM signal
 
-reg[3:0] DUTY_CYCLE=0; // initial duty cycle is 50%
+reg[BITS_COUNTER_PWM-1:0] DUTY_CYCLE=0; // initial duty cycle is 50%
 
 // Debouncing 2 buttons for inc/dec duty cycle 
 // Firstly generate slow clock enable for debouncing flip-flop (4Hz)
