@@ -47,12 +47,9 @@ localparam FRAME_WAIT = (BITRATE * 4);
 
 //-- Registro para generar la señal de reloj
 reg clk = 0;
-
-
 //-- Cables para las pruebas
 reg rx = 1;
 wire tx;
-
 //-- Instanciar el modulo rxleds
 echo #(BAUD)
   dut(
@@ -60,7 +57,6 @@ echo #(BAUD)
     .rx(rx),
     .tx(tx)
   );
-
 //-- Generador de reloj. Periodo 2 unidades
 always 
   # 1 clk <= ~clk;

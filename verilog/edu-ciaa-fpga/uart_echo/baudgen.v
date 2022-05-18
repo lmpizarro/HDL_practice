@@ -23,9 +23,10 @@ module baudgen
     parameter BAUD = `B115200
     )
 
-(input wire clk,
-               input wire clk_ena, 
-               output wire clk_out);
+    (input wire clk,
+     input wire clk_ena, 
+     output wire clk_out
+     );
 
 //-- Valor por defecto de la velocidad en baudios
 
