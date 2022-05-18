@@ -1,0 +1,12 @@
+set_io dec_duty   32
+set_io inc_duty   31
+set_io clk  94
+set_io PWM_OUT 1
+
+
+
+
+
+
+
+
