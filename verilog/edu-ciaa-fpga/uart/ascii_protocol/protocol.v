@@ -63,20 +63,21 @@ module protocol(input wire clk,         //-- Reloj del sistema
   end
 
   
-  reg wen = 0;
   wire [7:0] mem_out;
   wire [3:0] bin_out;
-  reg [3:0] address;
-  reg [7:0] data_mem;
   wire start_msg, end_msg, cmd_byte,  is_hex;
-  reg [3:0] rx_state;
-  reg [15:0] r_command_code;
   wire [15:0] command_code;
-  reg [7:0] r_command;
-  reg [7:0]  r_address;
   wire [7:0] tx_msb; 
   wire [7:0] tx_lsb; 
 
+  reg wen = 0;
+  reg [3:0] address;
+  reg [7:0] data_mem;
+  reg [3:0] rx_state;
+  reg [15:0] r_command_code;
+
+  reg [7:0] r_tx_command;
+  reg [7:0] r_tx_address;
   reg [7:0] r_tx_msb; 
   reg [7:0] r_tx_lsb; 
 
@@ -118,7 +119,7 @@ module protocol(input wire clk,         //-- Reloj del sistema
             if (cmd_byte) begin
               rx_state <= CMD_BYTE;
               r_command_code[15:0] <= command_code[15:0];
-              r_command <= rx_data;
+              r_tx_command <= rx_data;
             end
             else
               rx_state <= STRT_MES;
@@ -126,7 +127,7 @@ module protocol(input wire clk,         //-- Reloj del sistema
         CMD_BYTE: // 2
             if (is_hex) begin
               rx_state <= ADDR;
-              r_address <= rx_data;
+              r_tx_address <= rx_data;
             end
             else
               rx_state <= CMD_BYTE;
@@ -144,8 +145,8 @@ module protocol(input wire clk,         //-- Reloj del sistema
             if (end_msg) begin
               rx_state <=RST;
               r_command_code <= 16'h0000;
-              r_command <= 8'h00;
-              r_address <= 8'h00;
+              r_tx_command <= 8'h00;
+              r_tx_address <= 8'h00;
             end
             else
               rx_state <=NIB2;
