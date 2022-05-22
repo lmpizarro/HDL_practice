@@ -72,9 +72,13 @@ module protocol(input wire clk,         //-- Reloj del sistema
   reg [3:0] rx_state;
   reg [15:0] r_command_code;
   wire [15:0] command_code;
-  reg [7:0] r_command; 
+  reg [7:0] r_command;
+  reg [7:0]  r_address;
   wire [7:0] tx_msb; 
   wire [7:0] tx_lsb; 
+
+  reg [7:0] r_tx_msb; 
+  reg [7:0] r_tx_lsb; 
 
   ram_mem ram_mem_wen01(clk, wen, address[3:0], data_mem[7:0], mem_out);
   hexa_to_bin htb(rx_data[7:0], bin_out[3:0]);
@@ -100,6 +104,8 @@ module protocol(input wire clk,         //-- Reloj del sistema
       rx_state <= RST;
       tx_data <= 0;
       r_command_code <= 16'h0000;
+      r_tx_lsb <=0;
+      r_tx_msb <=0;
     end
     else
       case(rx_state)
@@ -119,7 +125,8 @@ module protocol(input wire clk,         //-- Reloj del sistema
           end
         CMD_BYTE: // 2
             if (is_hex) begin
-              rx_state <= ADDR; 
+              rx_state <= ADDR;
+              r_address <= rx_data;
             end
             else
               rx_state <= CMD_BYTE;
@@ -138,6 +145,7 @@ module protocol(input wire clk,         //-- Reloj del sistema
               rx_state <=RST;
               r_command_code <= 16'h0000;
               r_command <= 8'h00;
+              r_address <= 8'h00;
             end
             else
               rx_state <=NIB2;
@@ -168,14 +176,20 @@ module protocol(input wire clk,         //-- Reloj del sistema
     end
 
 
-    if ((rx_state == ADDR) & (is_hex) & (r_command_code == 16'h0002) & tx_rdy)
+    if ((rx_state == ADDR) & (is_hex) & (r_command_code == 16'h0002) & tx_rdy) begin
       tx_data[7:0] <= tx_msb[7:0];
-    if ((rx_state == NIB1) & (is_hex) & (r_command_code == 16'h0002) & tx_rdy)
+    end
+    if ((rx_state == NIB1) & (is_hex) & (r_command_code == 16'h0002) & tx_rdy) begin
       tx_data[7:0] <= tx_lsb[7:0];
+    end
     if ((rx_state == NIB2) & (end_msg) & (r_command_code == 16'h0002) & tx_rdy)begin
       tx_data[7:0] <= 8'h0d;
     end
 
+    if(r_command_code == 16'h0002) begin
+      r_tx_lsb <= tx_lsb;
+      r_tx_msb <= tx_msb;
+    end
 
     
   end
