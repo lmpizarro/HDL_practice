@@ -69,9 +69,10 @@ module protocol(input wire clk,         //-- Reloj del sistema
   reg [3:0] address;
   reg [7:0] data_mem;
   wire start_msg, end_msg, cmd_byte,  is_hex;
-  reg [3:0] state;
-  reg [15:0] r_command;
+  reg [3:0] rx_state;
+  reg [15:0] r_command_code;
   wire [15:0] command_code;
+  reg [7:0] r_command; 
   wire [7:0] tx_msb; 
   wire [7:0] tx_lsb; 
 
@@ -91,85 +92,87 @@ module protocol(input wire clk,         //-- Reloj del sistema
   localparam NIB2     = 3'b101;  // -- MSNibble
   localparam ENDM     = 3'b111;  //-- End Message
   
-  assign tx_strt = (is_hex | end_msg) & (r_command == 16'h02);
+  assign tx_strt = (is_hex | end_msg) & (r_command_code == 16'h02);
 
   cmd_control cctrl(rx_data[7:0], start_msg, end_msg, cmd_byte,  is_hex, rcv);
   always @(posedge clk) begin
     if (clear == 0) begin
-      state <= RST;
+      rx_state <= RST;
       tx_data <= 0;
-      r_command <= 16'h0000;
+      r_command_code <= 16'h0000;
     end
     else
-      case(state)
+      case(rx_state)
         RST:
           if (start_msg) begin
-            state <= STRT_MES;
+            rx_state <= STRT_MES;
           end
         STRT_MES:  // 1
           begin
             if (cmd_byte) begin
-              state <= CMD_BYTE;
-              r_command[15:0] <= command_code[15:0];
+              rx_state <= CMD_BYTE;
+              r_command_code[15:0] <= command_code[15:0];
+              r_command <= rx_data;
             end
             else
-              state <= STRT_MES;
+              rx_state <= STRT_MES;
           end
         CMD_BYTE: // 2
             if (is_hex) begin
-              state <= ADDR; 
+              rx_state <= ADDR; 
             end
             else
-              state <= CMD_BYTE;
+              rx_state <= CMD_BYTE;
         ADDR: // 3
             if (is_hex)
-              state <= NIB1;
+              rx_state <= NIB1;
             else
-              state <= ADDR; 
+              rx_state <= ADDR; 
         NIB1: // 4
           if (is_hex)
-            state <= NIB2;
+            rx_state <= NIB2;
           else
-            state <= NIB1; 
+            rx_state <= NIB1; 
         NIB2: // 5
             if (end_msg) begin
-              state <=RST;
-              r_command <= 16'h0000;
+              rx_state <=RST;
+              r_command_code <= 16'h0000;
+              r_command <= 8'h00;
             end
             else
-              state <=NIB2;
+              rx_state <=NIB2;
         default:
-            state <= RST;
+            rx_state <= RST;
       endcase
   end
 
   always @(posedge clk) begin
     // write to memory
-    if ((state == CMD_BYTE) & (is_hex) & (r_command == 16'h0001))
+    if ((rx_state == CMD_BYTE) & (is_hex) & (r_command_code == 16'h0001))
       address[3:0] <= bin_out[3:0];
-    if ((state == ADDR) & (is_hex) & (r_command == 16'h0001))
+    if ((rx_state == ADDR) & (is_hex) & (r_command_code == 16'h0001))
       data_mem[3:0] <= bin_out[3:0];
-    if ((state == NIB1) & (is_hex))
+    if ((rx_state == NIB1) & (is_hex))
       data_mem[7:4] <= bin_out[3:0];
-    if ((state == NIB2) & (end_msg) & (r_command == 16'h0001)) begin
+    if ((rx_state == NIB2) & (end_msg) & (r_command_code == 16'h0001)) begin
       wen <= end_msg;
-      r_command <= 16'h0000; 
+      r_command_code <= 16'h0000; 
     end
     if (~end_msg)
       wen <= 0;
 
     // read from memory
-    if ((state == CMD_BYTE) & (is_hex) & (r_command == 16'h0002) & tx_rdy) begin
+    if ((rx_state == CMD_BYTE) & (is_hex) & (r_command_code == 16'h0002) & tx_rdy) begin
       address[3:0] <= bin_out[3:0];
       tx_data[7:0] <= 8'h3a;
     end
 
 
-    if ((state == ADDR) & (is_hex) & (r_command == 16'h0002) & tx_rdy)
+    if ((rx_state == ADDR) & (is_hex) & (r_command_code == 16'h0002) & tx_rdy)
       tx_data[7:0] <= tx_msb[7:0];
-    if ((state == NIB1) & (is_hex) & (r_command == 16'h0002) & tx_rdy)
+    if ((rx_state == NIB1) & (is_hex) & (r_command_code == 16'h0002) & tx_rdy)
       tx_data[7:0] <= tx_lsb[7:0];
-    if ((state == NIB2) & (end_msg) & (r_command == 16'h0002) & tx_rdy)begin
+    if ((rx_state == NIB2) & (end_msg) & (r_command_code == 16'h0002) & tx_rdy)begin
       tx_data[7:0] <= 8'h0d;
     end
 
