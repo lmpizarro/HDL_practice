@@ -42,6 +42,7 @@ $(NAME).bin: $(NAME).pcf $(NAME).v $(DEPS)
 	
 	#-- Sintesis
 	yosys -p "synth_ice40  -json $(NAME).json" $(NAME).v $(DEPS) -l yosys.log -Q -T
+	yosys -p "synth_ice40; write_verilog  " $(NAME).v $(DEPS) -l yosys.log -Q -T
 	
 	#-- Place & route
 	nextpnr-ice40 --hx4k  --package tq144  --json $(NAME).json --pcf $(NAME).pcf --asc $(NAME).asc

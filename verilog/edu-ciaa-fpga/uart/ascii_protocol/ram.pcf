@@ -1,0 +1,45 @@
+set_io sys_clk  94
+set_io write_en 37
+set_io din[0] 107 
+set_io din[1] 105
+set_io din[2] 99
+set_io din[3] 95
+set_io din[4] 84
+set_io din[5] 96
+set_io din[6] 90
+set_io din[7] 106
+set_io dout[0] 104
+set_io dout[1] 79
+set_io dout[2] 81
+set_io dout[3] 83
+set_io dout[4] 122 
+set_io dout[5] 125
+set_io dout[6] 129
+set_io dout[7] 134
+set_io r_addr[0] 21
+set_io r_addr[1] 22
+set_io r_addr[2] 23
+set_io r_addr[3] 24
+set_io r_addr[4] 137
+set_io r_addr[5] 17
+set_io r_addr[6] 18
+set_io r_addr[7] 19
+set_io r_addr[8] 20
+set_io w_addr[0] 11
+set_io w_addr[1] 12
+set_io w_addr[2] 15
+set_io w_addr[3] 16
+set_io w_addr[4] 7
+set_io w_addr[5] 8
+set_io w_addr[6] 9
+set_io w_addr[7] 10
+set_io w_addr[8] 144
+
+
+
+
+
+
+
+
+
