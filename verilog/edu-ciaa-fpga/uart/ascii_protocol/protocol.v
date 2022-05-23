@@ -71,21 +71,23 @@ module protocol(input wire clk,         //-- Reloj del sistema
   wire [7:0] tx_lsb; 
 
   reg wen = 0;
-  reg [3:0] address;
+  reg [8:0] mem_address;
   reg [7:0] data_mem;
   reg [3:0] rx_state;
   reg [15:0] r_command_code;
 
+  // response data
   reg [7:0] r_tx_command;
   reg [7:0] r_tx_address;
   reg [7:0] r_tx_msb; 
   reg [7:0] r_tx_lsb; 
 
-  ram_mem ram_mem_wen01(clk, wen, address[3:0], data_mem[7:0], mem_out);
+  ram_mem ram_mem_wen01(clk, wen, mem_address[8:0], data_mem[7:0], mem_out);
   hexa_to_bin htb(rx_data[7:0], bin_out[3:0]);
   bin_to_hexa bth1(mem_out[3:0], tx_lsb[7:0]);
   bin_to_hexa bth2(mem_out[7:4], tx_msb[7:0]);
-  
+
+   
   decode_cmd dcmd(rx_data[7:0], command_code[15:0]);
 
 
@@ -103,10 +105,15 @@ module protocol(input wire clk,         //-- Reloj del sistema
   always @(posedge clk) begin
     if (clear == 0) begin
       rx_state <= RST;
-      tx_data <= 0;
       r_command_code <= 16'h0000;
-      r_tx_lsb <=0;
-      r_tx_msb <=0;
+      tx_data <= 0;
+      r_tx_lsb <= 8'h00;
+      r_tx_msb <= 8'h00;
+      r_tx_command <= 8'h00;
+      r_tx_address <= 8'h00; 
+      mem_address <= 9'b0_0000_0000;
+      data_mem <= 8'h00;
+      wen <= 1'b0;
     end
     else
       case(rx_state)
@@ -119,60 +126,60 @@ module protocol(input wire clk,         //-- Reloj del sistema
             if (cmd_byte) begin
               rx_state <= CMD_BYTE;
               r_command_code[15:0] <= command_code[15:0];
-              r_tx_command <= rx_data;
+              r_tx_command[7:0] <= rx_data[7:0];
             end
             else
-              rx_state <= STRT_MES;
+              rx_state[3:0] <= STRT_MES;
           end
         CMD_BYTE: // 2
             if (is_hex) begin
-              rx_state <= ADDR;
-              r_tx_address <= rx_data;
+              rx_state[3:0] <= ADDR;
+              r_tx_address [7:0]<= rx_data;
             end
             else
-              rx_state <= CMD_BYTE;
+              rx_state[3:0] <= CMD_BYTE;
         ADDR: // 3
             if (is_hex)
-              rx_state <= NIB1;
+              rx_state[3:0] <= NIB1;
             else
-              rx_state <= ADDR; 
+              rx_state[3:0] <= ADDR; 
         NIB1: // 4
           if (is_hex)
-            rx_state <= NIB2;
+            rx_state[3:0] <= NIB2;
           else
-            rx_state <= NIB1; 
+            rx_state[3:0] <= NIB1; 
         NIB2: // 5
             if (end_msg) begin
-              rx_state <=RST;
+              rx_state[3:0] <=RST;
               r_command_code <= 16'h0000;
-              r_tx_command <= 8'h00;
-              r_tx_address <= 8'h00;
+              r_tx_command[7:0] <= 8'h00;
+              r_tx_address[7:0] <= 8'h00;
             end
             else
-              rx_state <=NIB2;
+              rx_state[3:0] <=NIB2;
         default:
-            rx_state <= RST;
+            rx_state[3:0] <= RST;
       endcase
   end
 
   always @(posedge clk) begin
     // write to memory
     if ((rx_state == CMD_BYTE) & (is_hex) & (r_command_code == 16'h0001))
-      address[3:0] <= bin_out[3:0];
+      mem_address[3:0] <= bin_out[3:0];
     if ((rx_state == ADDR) & (is_hex) & (r_command_code == 16'h0001))
       data_mem[3:0] <= bin_out[3:0];
     if ((rx_state == NIB1) & (is_hex))
       data_mem[7:4] <= bin_out[3:0];
     if ((rx_state == NIB2) & (end_msg) & (r_command_code == 16'h0001)) begin
       wen <= end_msg;
-      r_command_code <= 16'h0000; 
+      r_command_code[15:0] <= 16'h0000; 
     end
     if (~end_msg)
-      wen <= 0;
+      wen <= 1'b0;
 
     // read from memory
     if ((rx_state == CMD_BYTE) & (is_hex) & (r_command_code == 16'h0002) & tx_rdy) begin
-      address[3:0] <= bin_out[3:0];
+      mem_address[3:0] <= bin_out[3:0];
       tx_data[7:0] <= 8'h3a;
     end
 

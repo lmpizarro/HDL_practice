@@ -4,6 +4,7 @@
 
 NAME = protocol
 DEPS = uart_rx.v uart_tx.v baudgen_rx.v baudgen.v mods.v
+RAM = ram_init.mem
 
 #-------------------------------------------------------
 #-- Objetivo por defecto: hacer simulacion y sintesis
@@ -30,7 +31,7 @@ $(NAME)_tb.vcd: $(NAME).v $(DEPS) $(NAME)_tb.v
 	iverilog $^ -o $(NAME)_tb.vvp 
 	vvp $(NAME)_tb.vvp -lxt2
 	
-view:
+view: $(NAME)_tb.vcd
 	#-- Ver visualmente la simulacion con gtkwave
 	gtkwave  $(NAME)_tb.vcd &
 
@@ -40,7 +41,7 @@ view:
 $(NAME).bin: $(NAME).pcf $(NAME).v $(DEPS)
 	
 	#-- Sintesis
-	yosys -p "synth_ice40  -json $(NAME).json" $(NAME).v $(DEPS)
+	yosys -p "synth_ice40  -json $(NAME).json" $(NAME).v $(DEPS) -l yosys.log -Q -T
 	
 	#-- Place & route
 	nextpnr-ice40 --hx4k  --package tq144  --json $(NAME).json --pcf $(NAME).pcf --asc $(NAME).asc

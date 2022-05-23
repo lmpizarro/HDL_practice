@@ -72,6 +72,13 @@ initial begin
   $dumpvars(0, module_tb);
   #5 rst = 0; #5 rst = 1;
   //-- Enviar datos de prueba
+  #(FRAME_WAIT*1) send_car(8'h7b); // start message
+  #(FRAME_WAIT*1) send_car(8'h52); // cmd read
+  #(FRAME_WAIT*1) send_car(8'h38); // address
+  #(FRAME_WAIT*1) send_car(8'h30); // dummy
+  #(FRAME_WAIT*1) send_car(8'h30); // dummy
+  #(FRAME_WAIT*1) send_car(8'h7d); // end message
+
   #BITRATE      send_car(8'h30);
   #(FRAME_WAIT*1) send_car(8'h31);
   #(FRAME_WAIT*1) send_car(8'h32);
@@ -100,30 +107,30 @@ initial begin
   #(FRAME_WAIT*1) send_car(8'h00);
   #(FRAME_WAIT*1) send_car(8'h00);
   #(FRAME_WAIT*1) send_car(8'h00);
-  #(FRAME_WAIT*1) send_car(8'h3a); // start message
+  #(FRAME_WAIT*1) send_car(8'h7b); // start message
   #(FRAME_WAIT*1) send_car(8'h57); // write mem
   #(FRAME_WAIT*1) send_car(8'h33); // address
   #(FRAME_WAIT*1) send_car(8'h37); // nibble 1
   #(FRAME_WAIT*1) send_car(8'h63); // nibble 2
-  #(FRAME_WAIT*1) send_car(8'h0d); // end message 
+  #(FRAME_WAIT*1) send_car(8'h7d); // end message 
   #(FRAME_WAIT*1) send_car(8'h00);
   #(FRAME_WAIT*1) send_car(8'h00);
-  #(FRAME_WAIT*1) send_car(8'h3a); // start message
+  #(FRAME_WAIT*1) send_car(8'h7b); // start message
   #(FRAME_WAIT*1) send_car(8'h57); // write mem
   #(FRAME_WAIT*1) send_car(8'h66); // address
   #(FRAME_WAIT*1) send_car(8'h37); // nibble 1
   #(FRAME_WAIT*1) send_car(8'h62); // nibble 2
-  #(FRAME_WAIT*1) send_car(8'h0d); // end message
+  #(FRAME_WAIT*1) send_car(8'h7d); // end message
   #(FRAME_WAIT*1) send_car(8'h00);
   #(FRAME_WAIT*1) send_car(8'h00);
   #(FRAME_WAIT*1) send_car(8'h00);
   #(FRAME_WAIT*1) send_car(8'h00);
-  #(FRAME_WAIT*1) send_car(8'h3a); // start message
+  #(FRAME_WAIT*1) send_car(8'h7b); // start message
   #(FRAME_WAIT*1) send_car(8'h52); // cmd read
   #(FRAME_WAIT*1) send_car(8'h38); // address
   #(FRAME_WAIT*1) send_car(8'h30); // dummy
   #(FRAME_WAIT*1) send_car(8'h30); // dummy
-  #(FRAME_WAIT*1) send_car(8'h0d); // end message
+  #(FRAME_WAIT*1) send_car(8'h7d); // end message
   #(FRAME_WAIT*1) send_car(8'h00);
   #(FRAME_WAIT*1) send_car(8'h00);
   #(FRAME_WAIT*1) send_car(8'h0d); // end message
@@ -137,12 +144,12 @@ initial begin
   #(FRAME_WAIT*1) send_car(8'h3a); // start message
   #(FRAME_WAIT*1) send_car(8'h00);
   
-  #(FRAME_WAIT*1) send_car(8'h3a); // start message
-  #(FRAME_WAIT*1) send_car(8'h24); // write process
+  #(FRAME_WAIT*1) send_car(8'h7b); // start message
+  #(FRAME_WAIT*1) send_car(8'h57); // write process
   #(FRAME_WAIT*1) send_car(8'h33); // address
   #(FRAME_WAIT*1) send_car(8'h37); // nibble 1
   #(FRAME_WAIT*1) send_car(8'h63); // nibble 2
-  #(FRAME_WAIT*1) send_car(8'h0d); // end message
+  #(FRAME_WAIT*1) send_car(8'h7d); // end message
   
 
   #(FRAME_WAIT*4) $display("FIN de la simulacion");

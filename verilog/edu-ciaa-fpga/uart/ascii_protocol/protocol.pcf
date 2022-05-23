@@ -5,7 +5,7 @@ set_io leds[3] 4
 set_io leds[2] 3
 set_io leds[1] 2
 set_io leds[0] 1
-set_io clear 31
+set_io clear 37
 
 
 

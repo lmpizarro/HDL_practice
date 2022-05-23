@@ -1,48 +1,31 @@
+`default_nettype none
 
-module ram_mem(
-  input clk, wen, 
-  input [3:0] addr, 
-  input [7:0] wdata, 
-  output reg [7:0] rdata);
+module ram_mem(clk, write_en, addr, din,  dout);// 512x8
 
-  integer idx;
-  reg [7:0] mem [0:15];
-  initial begin
-    for (idx = 0; idx < 16; idx = idx + 1) mem[idx] = idx;
-  end 
-  
+	parameter ADDR_WIDTH = 9;
+	parameter DATA_WIDTH = 8;
 
-  initial begin
-    $dumpfile("protocol_tb.vcd");
-    $dumpvars(0, ram_mem);
-    for (idx = 0; idx < 16; idx = idx + 1) $dumpvars(0, mem[idx]);
-  end
+	input [ADDR_WIDTH-1:0] addr;
+	input [DATA_WIDTH-1:0] din;
+	input write_en, clk;
+	output [DATA_WIDTH-1:0] dout;
 
-  always @(posedge clk) begin
-        if (wen) mem[addr] <= wdata;
-        rdata <= mem[addr];
-  end
+	reg [DATA_WIDTH-1:0] dout; // Register for output.
+	reg [DATA_WIDTH-1:0] mem [0:(1<<ADDR_WIDTH)-1];
+	initial begin
+		$readmemh("ram_init.mem", mem);
+	end
+
+
+
+	always @(posedge clk)
+	begin
+		if (write_en)
+			mem[(addr)] <= din;
+		dout = mem[addr]; // Output register controlled by clock.
+	end
 endmodule
 
-module ram (
-    input CLK,
-    input [7:0] W_ADDR,
-    input [7:0] R_ADDR,
-    input WRITE_EN,
-    input READ_EN,
-    input [7:0] DIN,
-    output reg [7:0] DOUT
-  );
-
-reg [7:0] mem [0:255];
-
-always @(posedge CLK) begin
-  if (WRITE_EN)
-    mem[W_ADDR] <= DIN;
-  if (READ_EN)
-    DOUT <= mem[R_ADDR];
-end
-endmodule
 
 module bin_to_hexa(
 	input [3:0] data, 
@@ -151,10 +134,10 @@ reg r_s_m, r_e_m, r_m_m;
 always @(*) begin
 	{r_s_m, r_e_m, r_m_m} <= 3'b000;
 	case (d_in_8)
-		8'h3a: begin   // start message
+		8'h7b: begin   // start message
 	        {r_s_m, r_e_m, r_m_m} <= 3'b100;
 		end
-		8'h0d: begin  // end message
+		8'h7d: begin  // end message
 	        {r_s_m, r_e_m, r_m_m} <= 3'b010;
 		end
 		8'h57: begin  // write mem       M
