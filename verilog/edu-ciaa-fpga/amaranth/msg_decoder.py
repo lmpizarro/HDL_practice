@@ -96,9 +96,11 @@ if __name__ == "__main__":
 
         def transmit_proc():
             yield
-            yield fsm.i_rx_rdy.eq(1)
+            yield fsm.i_rx_rdy.eq(0)
             yield
             yield fsm.i_rx_data.eq(60)
+            yield
+            yield fsm.i_rx_rdy.eq(1)
             yield
             yield fsm.i_rx_rdy.eq(0)
             yield
