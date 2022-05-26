@@ -4,15 +4,22 @@ from amaranth.back import verilog
 
 class MSGDecoder(Elaboratable):
     def __init__(self) -> None:
-        self.i_rx_rdy = Signal()
-        self.i_rx_data = Signal(8)
-        self.o_rdy = Signal(reset=0)
         self.i_ack = Signal()
+        self.i_rx_data = Signal(8)
+        self.i_rx_rdy = Signal()
+        self.o_rdy = Signal(reset=0)
         self.o_err  = Signal()
+
+        self.o_read_mem = Signal()
+        self.o_write_mem = Signal()
+        self.o_pntr = Signal(4)
+        self.o_data = Signal(8)
 
 
     def ports(self):
-        return [self.i_ack, self.i_rx_data, self.i_rx_rdy, self.o_rdy]
+        return [self.i_ack, self.i_rx_data, self.i_rx_rdy, self.o_rdy,
+                self.o_err, self.o_read_mem, self.o_write_mem, self.o_pntr,
+                self.o_data]
 
     def elaborate(self, platform):
         m = Module()
@@ -21,28 +28,30 @@ class MSGDecoder(Elaboratable):
         nb1 = Signal(4)
         nb2 = Signal(4)
 
-        data = Signal(8)
-        pntr = Signal(4)
-
         chars = Signal(3)
+
+        with m.If(cmd == 0x52):
+            m.d.comb += self.o_read_mem.eq(1)
+        with m.Elif(cmd == 0x57):
+            m.d.comb += self.o_write_mem.eq(1)
+
 
         with m.If((chars == 3) & self.i_rx_rdy):
             m.d.sync += cmd.eq(self.i_rx_data)
 
         with m.If((chars == 2) & self.i_rx_rdy):
-            m.d.sync += pntr.eq(self.i_rx_data[0:3])
+            m.d.sync += self.o_pntr.eq(self.i_rx_data[0:3])
 
         with m.If((chars == 1) & self.i_rx_rdy):
             m.d.sync += nb1.eq(self.i_rx_data[0:3])
 
         with m.If((chars == 0) & self.i_rx_rdy):
             m.d.sync += nb2.eq(self.i_rx_data[0:3])
-
-        
+            
         with m.If(self.i_ack):
-            m.d.sync += [nb2.eq(0), nb1.eq(0), pntr.eq(0), cmd.eq(0)]
+            m.d.sync += [nb2.eq(0), nb1.eq(0), self.o_pntr.eq(0), cmd.eq(0)]
 
-        m.d.comb += data.eq(Cat(nb2, nb1))
+        m.d.comb += self.o_data.eq(Cat(nb2, nb1))
             
 
         with m.FSM() as fsm:
@@ -150,4 +159,6 @@ if __name__ == "__main__":
         with sim.write_vcd("fsm.vcd", "fsm.gtkw"):
             sim.run()
 
-
+"""
+https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
+"""
