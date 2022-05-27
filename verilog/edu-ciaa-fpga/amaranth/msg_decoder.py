@@ -1,5 +1,7 @@
 from amaranth import *
 from amaranth.back import verilog
+from mem import RegisterFile
+from ascii_nibble import AsciiToNibble
 
 
 class MSGDecoder(Elaboratable):
@@ -27,8 +29,22 @@ class MSGDecoder(Elaboratable):
         cmd = Signal(8)
         nb1 = Signal(4)
         nb2 = Signal(4)
-
         chars = Signal(3)
+
+
+        ascii_nib = AsciiToNibble()
+        m.submodules.dec1 = ascii_nib
+        m.d.comb += [
+                ascii_nib.i_data.eq(self.i_rx_data),
+            ]        
+
+
+        memory = RegisterFile()
+        m.submodules.memory = memory
+        m.d.comb += [
+            memory.i_adr.eq(self.o_pntr), 
+            memory.i_we.eq(self.o_write_mem)
+            ]         
 
         with m.If(cmd == 0x52):
             m.d.comb += self.o_read_mem.eq(1)
@@ -43,10 +59,10 @@ class MSGDecoder(Elaboratable):
             m.d.sync += self.o_pntr.eq(self.i_rx_data[0:3])
 
         with m.If((chars == 1) & self.i_rx_rdy):
-            m.d.sync += nb1.eq(self.i_rx_data[0:3])
+            m.d.sync += nb1.eq(ascii_nib.o_nibble)
 
         with m.If((chars == 0) & self.i_rx_rdy):
-            m.d.sync += nb2.eq(self.i_rx_data[0:3])
+            m.d.sync += nb2.eq(ascii_nib.o_nibble)
             
         with m.If(self.i_ack):
             m.d.sync += [nb2.eq(0), nb1.eq(0), self.o_pntr.eq(0), cmd.eq(0)]
@@ -82,8 +98,6 @@ class MSGDecoder(Elaboratable):
             m.d.comb += self.o_err.eq(fsm.ongoing("ERROR"))
             with m.State("ERROR"):
                 pass
-
-
 
         return m
 
