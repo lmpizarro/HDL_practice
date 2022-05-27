@@ -68,7 +68,6 @@ class MSGDecoder(Elaboratable):
             m.d.sync += [nb2.eq(0), nb1.eq(0), self.o_pntr.eq(0), cmd.eq(0)]
 
         m.d.comb += self.o_data.eq(Cat(nb2, nb1))
-            
 
         with m.FSM() as fsm:
             with m.State("Start"):
@@ -172,7 +171,3 @@ if __name__ == "__main__":
 
         with sim.write_vcd("fsm.vcd", "fsm.gtkw"):
             sim.run()
-
-"""
-https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
-"""
