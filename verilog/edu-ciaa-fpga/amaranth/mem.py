@@ -8,7 +8,8 @@ class RegisterFile(Elaboratable):
         self.o_dat_r = Signal(8)
         self.i_dat_w = Signal(8)
         self.i_we    = Signal()
-        self.mem   = Memory(width=8, depth=16, init=[i for i in range(48, 48+16)])
+        arr_init = [i for i in range(125, 125+16)]
+        self.mem   = Memory(width=8, depth=16, init=arr_init)
 
     def elaborate(self, platform):
         m = Module()

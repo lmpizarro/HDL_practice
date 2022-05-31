@@ -52,47 +52,47 @@ class AsciiToNibble(Elaboratable):
 class NibbleToAscii(Elaboratable):
     def __init__(self) -> None:
         self.i_data = Signal(4)
-        self.o_nibble = Signal(8)
+        self.o_ascii = Signal(8)
 
     def ports(self):
-        return [self.i_data, self.o_nibble]
+        return [self.i_data, self.o_ascii]
 
     def elaborate(self, platform):
         m = Module()
 
         with m.Switch(self.i_data):
             with m.Case(0):
-                m.d.comb += self.o_nibble.eq(48)
+                m.d.comb += self.o_ascii.eq(48)
             with m.Case(1):
-                m.d.comb += self.o_nibble.eq(49)
+                m.d.comb += self.o_ascii.eq(49)
             with m.Case(2):
-                m.d.comb += self.o_nibble.eq(50)
+                m.d.comb += self.o_ascii.eq(50)
             with m.Case(3):
-                m.d.comb += self.o_nibble.eq(51)
+                m.d.comb += self.o_ascii.eq(51)
             with m.Case(4):
-                m.d.comb += self.o_nibble.eq(52)
+                m.d.comb += self.o_ascii.eq(52)
             with m.Case(5):
-                m.d.comb += self.o_nibble.eq(53)
+                m.d.comb += self.o_ascii.eq(53)
             with m.Case(6):
-                m.d.comb += self.o_nibble.eq(54)
+                m.d.comb += self.o_ascii.eq(54)
             with m.Case(7):
-                m.d.comb += self.o_nibble.eq(55)
+                m.d.comb += self.o_ascii.eq(55)
             with m.Case(8):
-                m.d.comb += self.o_nibble.eq(56)
+                m.d.comb += self.o_ascii.eq(56)
             with m.Case(9):
-                m.d.comb += self.o_nibble.eq(57)
+                m.d.comb += self.o_ascii.eq(57)
             with m.Case(10):
-                m.d.comb += self.o_nibble.eq(97)
+                m.d.comb += self.o_ascii.eq(97)
             with m.Case(11):
-                m.d.comb += self.o_nibble.eq(98)
+                m.d.comb += self.o_ascii.eq(98)
             with m.Case(12):
-                m.d.comb += self.o_nibble.eq(99)
+                m.d.comb += self.o_ascii.eq(99)
             with m.Case(13):
-                m.d.comb += self.o_nibble.eq(100)
+                m.d.comb += self.o_ascii.eq(100)
             with m.Case(14):
-                m.d.comb += self.o_nibble.eq(101)
+                m.d.comb += self.o_ascii.eq(101)
             with m.Case(15):
-                m.d.comb += self.o_nibble.eq(102)
+                m.d.comb += self.o_ascii.eq(102)
             with m.Case():
-                m.d.comb += self.o_nibble.eq(0)
+                m.d.comb += self.o_ascii.eq(0)
         return m
