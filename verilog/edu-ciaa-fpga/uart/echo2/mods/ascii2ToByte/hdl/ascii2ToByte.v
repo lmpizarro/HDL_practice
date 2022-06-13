@@ -4,56 +4,52 @@ module Top (
     input [7:0] i_data
   );
 
-  wire [7:0] w_cmd;
-  reg [7:0] r_cmd = 0;
+  wire [7:0] w_cmd;       // from module
+  reg  [7:0] r_cmd = 0; 
+  wire [7:0] w_data_mem;  // from module
+  wire [7:0] w_addr_mem;  // from module
+  wire [8:0] w_addr_to_mem9;
+
   wire addr_deco_rdy;
-  wire load;
-  wire cmd_rdy;
+  wire load, cmd_rdy;
   wire wr_ram;
   reg r_wr_ram;
   wire rd_ram;
-  wire [7:0] w_data_mem;
-  wire [7:0] w_data_to_mem;
-  wire [7:0] w_addr_mem;
-  wire [8:0] w_addr_to_mem9;
 
   assign wr_ram = r_cmd[0] & addr_deco_rdy;
   assign rd_ram = r_cmd[1] & addr_deco_rdy;
   assign w_addr_to_mem9 = ({9{wr_ram}} |  {9{rd_ram}}) & {1'b0, w_addr_mem};
+  assign load = (r_cmd[0] | r_cmd[1]) & i_load;
 
-  always @(posedge clk ) begin
-      if(|w_cmd)
-        r_cmd <= w_cmd;
-      if(wr_ram | rd_ram)
-        r_cmd <= 0;
-      if(wr_ram)
-        r_wr_ram <= wr_ram;
-      else
-        r_wr_ram <= wr_ram;
-      
+  always @(posedge clk )
+  begin
+    if(|w_cmd)
+      r_cmd <= w_cmd;
+    if(wr_ram | rd_ram)
+      r_cmd <= 0;
+    r_wr_ram <= wr_ram;
   end
 
+  AddrDataDecoder addec(
+                    .clk(clk),
+                    .i_clr(w_cmd[3] | cmd_rdy),
+                    .i_load(load),
+                    .i_data(i_data),
+
+                    .o_rdy(addr_deco_rdy),
+                    .o_data(w_data_mem),
+                    .o_addr(w_addr_mem)
+                  );
   cmdDecoder cmdDeco(
-    .clk(clk),
-    .i_data(i_data),
-    .o_cmd(w_cmd),
-    .o_rdy(cmd_rdy)
-    // W 1, R 2, X 4, BEG 8, END 16, Data 32 
-  );
-assign load = (r_cmd[0] | r_cmd[1]) & i_load;
+               .clk(clk),
+               .i_data(i_data),
+               .o_cmd(w_cmd),
+               .o_rdy(cmd_rdy)
+               // W 1, R 2, X 4, BEG 8, END 16, Data 32
+             );
 
-AddrDataDecoder addec(
-    .clk(clk),
-    .i_clr(w_cmd[3] | cmd_rdy),
-    .i_load(load),
-    .i_data(i_data),
 
-    .o_rdy(addr_deco_rdy),
-    .o_data(w_data_mem),
-    .o_addr(w_addr_mem)
-  );
-
- // the "macro" to dump signals
+  // the "macro" to dump signals
 `ifdef COCOTB_SIM
 
   integer num_regs;
@@ -73,7 +69,7 @@ module cmdDecoder (
     input [7:0] i_data,
     output [7:0] o_cmd,
     output o_rdy
-    // W 1, R 2, X 4, BEG 8, END 16, Data 32 
+    // W 1, R 2, X 4, BEG 8, END 16, Data 32
   );
 
   reg [7:0] r_o_cmd;
@@ -104,7 +100,7 @@ module cmdDecoder (
       begin
         r_o_cmd <= 8'b0001_0000;
       end
-      8'h44: // D Data 
+      8'h44: // D Data
       begin
         r_o_cmd <= 8'b0010_0000;
       end
@@ -172,7 +168,8 @@ module AddrDataDecoder(
 
   always @(posedge clk )
   begin
-    if(i_clr) begin
+    if(i_clr)
+    begin
       r_o_rdy <= 0;
       cntrl_load <= 0;
     end
@@ -205,7 +202,7 @@ module AddrDataDecoder(
                   .o_data(o_data)
                 );
 
-               
+
 endmodule
 
 module byteSeqToByte (
