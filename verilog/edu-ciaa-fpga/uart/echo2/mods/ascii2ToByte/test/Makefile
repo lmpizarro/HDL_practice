@@ -2,7 +2,7 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 
-DUT = MemManager
+DUT = Top
 
 VERILOG_SOURCES += $(PWD)/../hdl/ascii2ToByte.v
 # use VHDL_SOURCES for VHDL files
